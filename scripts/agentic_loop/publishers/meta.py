@@ -24,6 +24,7 @@ class MetaPublisher(Publisher):
         self.status = cfg.get("ad_status", "PAUSED").upper()
         self.dsa = cfg.get("dsa", {}) or {}
         self.image_url = cfg.get("image_url", "")
+        self.image_path = cfg.get("image_path", "")
 
     def _proof(self) -> str:
         if not self.app_secret or not self.access_token:
@@ -55,6 +56,29 @@ class MetaPublisher(Publisher):
             return data
         except requests.RequestException as exc:
             raise RuntimeError(f"Meta API request failed: {exc}") from exc
+
+    def upload_image(self, image_path: str) -> str:
+        if not image_path:
+            raise RuntimeError("No image_path configured for Meta ad creative")
+        path = f"act_{self.ad_account_id.lstrip('act_')}/adimages"
+        url = f"{BASE_URL}/{path}"
+        params = {"access_token": self.access_token}
+        proof = self._proof()
+        if proof:
+            params["appsecret_proof"] = proof
+        try:
+            with open(image_path, "rb") as f:
+                files = {"file": (image_path.split("/")[-1], f, "image/png")}
+                resp = requests.post(url, params=params, files=files, timeout=120)
+            data = resp.json()
+            if resp.status_code >= 400 or "error" in data:
+                raise RuntimeError(f"Meta API error: {data.get('error', data)}")
+            images = data.get("images", {})
+            if not images:
+                raise RuntimeError(f"Unexpected image upload response: {data}")
+            return next(iter(images.values())).get("hash")
+        except requests.RequestException as exc:
+            raise RuntimeError(f"Meta image upload failed: {exc}") from exc
 
     def validate(self) -> dict:
         if not self.access_token:
@@ -139,6 +163,7 @@ class MetaPublisher(Publisher):
         message: str,
         link: str,
         headline: str,
+        image_hash: str,
         cta_type: str = "LEARN_MORE",
     ) -> str:
         if not self.page_id:
@@ -163,7 +188,7 @@ class MetaPublisher(Publisher):
                         "message": message,
                         "link": link,
                         "name": headline,
-                        "image_url": self.image_url,
+                        "image_hash": image_hash,
                         "call_to_action": {"type": normalized_cta, "value": {"link": link}},
                     },
                 }
@@ -211,11 +236,13 @@ class MetaPublisher(Publisher):
             name=f"{campaign_name} — AdSet",
             daily_budget_eur=daily_budget,
         )
+        image_hash = self.upload_image(self.image_path)
         creative_id = self.create_adcreative(
             name=f"{campaign_name} — Creative",
             message=creative.get("primary_text", ""),
             link=metadata.get("link", "https://shop.fabiabox.com"),
             headline=creative.get("headline", ""),
+            image_hash=image_hash,
             cta_type=creative.get("cta_button", "LEARN_MORE"),
         )
         ad_id = self.create_ad(adset_id, creative_id, name=f"{campaign_name} — Ad")
