@@ -3,6 +3,10 @@
     "inputs": {"ckpt_name": "ltx-2.3-22b-dev-fp8.safetensors"},
     "class_type": "CheckpointLoaderSimple"
   },
+  "18": {
+    "inputs": {"text_encoder": "gemma_3_12B_it_fp4_mixed.safetensors", "ckpt_name": "ltx-2.3-22b-dev-fp8.safetensors", "device": "default"},
+    "class_type": "LTXAVTextEncoderLoader"
+  },
   "2": {
     "inputs": {"model": ["1", 0], "lora_name": "ltx_2.3_22b_distilled_1.1_lora_dynamic_fro09_avg_rank_111_bf16.safetensors", "strength_model": 0.5},
     "class_type": "LoraLoaderModelOnly"
@@ -10,14 +14,14 @@
   "3": {
     "inputs": {
       "text": "Cinematic slow dolly around a premium dark gunmetal and copper mini PC workstation, the FABIABox, with a low-wide rectangular chassis made of solid CNC-milled anodized aluminum and bronze accents. The front has precision horizontal copper cooling slats glowing warm amber from internal heat pipes and components, not hollow. The right side of the front face has a small circular chrome F logo backlit with soft white light. A single lit beeswax birthday candle flickers gently on top. The device sits on a polished wooden desk, smaller than the three holographic displays behind it showing code dashboards and HUD rings. Luxury penthouse office at night, city skyline bokeh through windows. Photorealistic, 8K.",
-      "clip": ["1", 1]
+      "clip": ["18", 0]
     },
     "class_type": "CLIPTextEncode"
   },
   "4": {
     "inputs": {
       "text": "plastic, toy-like, cheap, empty heater, hollow grille, oversized, huge, cartoon, 3D render, glossy plastic, rubber, lightweight, distorted logo, blurry text, extra ports, USB-A, HDMI, audio jacks, watermark, text errors, low resolution, blurry",
-      "clip": ["1", 1]
+      "clip": ["18", 0]
     },
     "class_type": "CLIPTextEncode"
   },
