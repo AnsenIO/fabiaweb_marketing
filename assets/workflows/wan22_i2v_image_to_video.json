@@ -1,0 +1,117 @@
+{
+  "71": {
+    "inputs": {
+      "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader"
+  },
+  "73": {
+    "inputs": {"vae_name": "wan2.2_vae.safetensors"},
+    "class_type": "VAELoader"
+  },
+  "75": {
+    "inputs": {
+      "unet_name": "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader"
+  },
+  "76": {
+    "inputs": {
+      "unet_name": "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader"
+  },
+  "82": {
+    "inputs": {"model": ["75", 0], "shift": 5.0},
+    "class_type": "ModelSamplingSD3"
+  },
+  "86": {
+    "inputs": {"model": ["76", 0], "shift": 5.0},
+    "class_type": "ModelSamplingSD3"
+  },
+  "89": {
+    "inputs": {
+      "text": "Cinematic slow dolly around a premium dark gunmetal and copper mini PC workstation, the FABIABox, with a low-wide rectangular chassis made of solid CNC-milled anodized aluminum and bronze accents. The front has precision horizontal copper cooling slats glowing warm amber from internal heat pipes and components, not hollow. The right side of the front face has a small circular chrome F logo backlit with soft white light. A single lit beeswax birthday candle flickers on top. The device sits on a polished wooden desk, smaller than the three holographic displays behind it showing code dashboards and HUD rings. Luxury penthouse office at night, city skyline bokeh through windows. Photorealistic, 8K.",
+      "clip": ["71", 0]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "72": {
+    "inputs": {
+      "text": "plastic, toy-like, cheap, empty heater, hollow grille, oversized, huge, cartoon, 3D render, glossy plastic, rubber, lightweight, distorted logo, blurry text, extra ports, USB-A, HDMI, audio jacks, watermark, text errors, low resolution, blurry",
+      "clip": ["71", 0]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "200": {
+    "inputs": {"image": "fabiabox_birthday_qwen_ref.jpg"},
+    "class_type": "LoadImage"
+  },
+  "201": {
+    "inputs": {"width": 640, "height": 640, "upscale_method": "nearest-exact", "crop": "center", "image": ["200", 0]},
+    "class_type": "ImageScale"
+  },
+  "202": {
+    "inputs": {
+      "vae": ["73", 0],
+      "width": 640,
+      "height": 640,
+      "length": 81,
+      "batch_size": 1,
+      "start_image": ["201", 0]
+    },
+    "class_type": "Wan22ImageToVideoLatent"
+  },
+  "81": {
+    "inputs": {
+      "model": ["82", 0],
+      "positive": ["89", 0],
+      "negative": ["72", 0],
+      "latent_image": ["202", 0],
+      "add_noise": "enable",
+      "noise_seed": 42,
+      "steps": 4,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "start_at_step": 0,
+      "end_at_step": 2,
+      "return_with_leftover_noise": "enable"
+    },
+    "class_type": "KSamplerAdvanced"
+  },
+  "78": {
+    "inputs": {
+      "model": ["86", 0],
+      "positive": ["89", 0],
+      "negative": ["72", 0],
+      "latent_image": ["81", 0],
+      "add_noise": "disable",
+      "noise_seed": 42,
+      "steps": 4,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "start_at_step": 2,
+      "end_at_step": 4,
+      "return_with_leftover_noise": "disable"
+    },
+    "class_type": "KSamplerAdvanced"
+  },
+  "87": {
+    "inputs": {"samples": ["78", 0], "vae": ["73", 0]},
+    "class_type": "VAEDecode"
+  },
+  "88": {
+    "inputs": {"images": ["87", 0], "fps": 16},
+    "class_type": "CreateVideo"
+  },
+  "80": {
+    "inputs": {"filename_prefix": "Wan22_i2v", "format": "mp4", "codec": "h264", "video": ["88", 0]},
+    "class_type": "SaveVideo"
+  }
+}
