@@ -1,325 +1,165 @@
-# Meta (Facebook & Instagram) Ads — FABIABox Marketing Instructions
+# Meta (Facebook & Instagram) Ads — FABIABox Marketing Runbook
 
-> **Purpose:** How to programmatically manage Meta (Facebook & Instagram) Ads campaigns for FABIABox.
+> **Purpose:** Operate Meta Ads and the FABIABox Facebook page programmatically for FABIABox.
 
 ---
 
-## Meta Marketing API Setup
+## Current setup
 
-### Authentication
+| Item | Value / Note |
+|------|--------------|
+| Page | SquadShelf → rebranding to **FABIABox** |
+| Ad account | IABAI ad account, currency **EUR** |
+| Active campaign | `FABIABox — Website Retargeting` |
+| Objective | `OUTCOME_TRAFFIC` |
+| AdSet | `EU Founders` (consolidated single adset) |
+| Active ads | 6 creative variants (V1–V6) |
+| Status | controlled by `META_AD_STATUS` env var (`PAUSED` or `ACTIVE`) |
 
-1. Create a Meta Developer account
-2. Create a new app in the Developer Portal
-3. Generate App ID and App Secret
-4. Get Marketing API access
-5. Create ad account and get ad account ID
-6. Set up OAuth2 for user context
+---
 
-### MCP Server Setup
+## Authentication & token management
+
+Meta uses three token types:
+
+| Token | Lifetime | How we handle it |
+|-------|----------|------------------|
+| Short-lived User Access Token | ~1–2 hours | Generated in [Graph API Explorer](https://developers.facebook.com/tools/explorer/) |
+| Long-lived User Access Token | ~60 days | Exchanged automatically via script; refreshable before expiry |
+| Page Access Token | Never expires (if from long-lived user token) | Fetched automatically via `/me/accounts` |
+
+### Required permissions
+
+- `ads_management`
+- `ads_read`
+- `business_management`
+- `pages_manage_metadata`
+- `pages_read_engagement`
+
+### Scripts
 
 ```bash
-# Install Meta Marketing MCP server
-npm install @meta/marketing-mcp-server
+# Exchange a short-lived token and fetch the page token
+cd ~/projects/fabiaweb_marketing
+python scripts/get_meta_long_lived_token.py "<SHORT_LIVED_TOKEN>"
 
-# Configure
-export META_APP_ID="your_app_id"
-export META_APP_SECRET="your_app_secret"
-export META_ACCESS_TOKEN="your_access_token"
-export META_AD_ACCOUNT_ID="your_ad_account_id"
-export META_BUSINESS_MANAGER_ID="your_business_manager_id"
+# Refresh an existing long-lived token before it expires
+python scripts/get_meta_long_lived_token.py --refresh
 ```
 
-### Key API Endpoints
-
-| Operation | Endpoint | Method |
-|-----------|----------|--------|
-| Ad accounts | `/v19.0/{ad_account_id}` | GET |
-| Campaigns | `/{ad_account_id}/campaigns` | GET/POST |
-| Ad groups | `/{ad_account_id}/adsets` | GET/POST |
-| Ads | `/{ad_account_id}/ads` | GET/POST |
-| Creatives | `/{ad_account_id}/adcreatives` | GET/POST |
-| Images | `/{ad_account_id}/images` | POST |
-| Videos | `/{ad_account_id}/videos` | POST |
-| Carousels | `/{ad_account_id}/adcreatives` | POST |
-| Audiences | `/{ad_account_id}/customaudiences` | GET/POST |
-| Insights | `/{ad_account_id}/insights` | GET |
+The script updates `config/.env` with `META_ACCESS_TOKEN` and `META_PAGE_ACCESS_TOKEN` and writes the expiry to `config/meta_token_expiry.txt`.
 
 ---
 
-## Agent Instructions for Meta Ads
+## Campaign structure
 
-### Phase 1: Audience Building
+Single consolidated adset to speed up learning and avoid clutter:
 
-```python
-class MetaAudienceAgent:
-    def build_audiences(self):
-        """Build targeted audiences for FABIABox."""
-        
-        audiences = {
-            "custom_audiences": {
-                "pre_order_list": {
-                    "name": "FABIABox Pre-Order List",
-                    "type": "CUSTOM",
-                    "source": "email_list",
-                    "data": "pre_order_emails.csv"
-                },
-                "website_visitors": {
-                    "name": "FABIABox Website Visitors",
-                    "type": "CUSTOM",
-                    "source": "pixel",
-                    "retention_days": 180
-                },
-                "content_engagers": {
-                    "name": "FABIABox Content Engagers",
-                    "type": "CUSTOM",
-                    "source": "engagement",
-                    "retention_days": 90
-                }
-            },
-            "lookalike_audiences": {
-                "pre_order_lookalike": {
-                    "name": "FABIABox Pre-Order Lookalike",
-                    "type": "LOOKALIKE",
-                    "source": "pre_order_list",
-                    "regions": ["EU", "US", "APAC"]
-                },
-                "website_lookalike": {
-                    "name": "FABIABox Website Lookalike",
-                    "type": "LOOKALIKE",
-                    "source": "website_visitors",
-                    "regions": ["EU", "US", "APAC"]
-                }
-            },
-            "interest_audiences": {
-                "ai_enthusiasts": ["Artificial Intelligence", "Machine Learning", "Deep Learning"],
-                "tech_founders": ["Startup", "Entrepreneurship", "Technology"],
-                "enterprise_it": ["Enterprise Software", "Cloud Computing", "Data Center"],
-                "hardware_enthusiasts": ["NVIDIA", "AMD", "Computer Hardware"]
-            }
-        }
-        
-        return audiences
+```
+Campaign: FABIABox — Website Retargeting
+ ├── AdSet: EU Founders
+ │   ├── Ad V1: Founder with idea
+ │   ├── Ad V2: Product shot
+ │   ├── Ad V3: Sovereign angle
+ │   ├── Ad V4: Timeline / speed
+ │   ├── Ad V5: Product close-up
+ │   └── Ad V6: Co-founder metaphor
 ```
 
-### Phase 2: Campaign Creation
+Core messaging:
 
-```python
-class MetaCampaignAgent:
-    def create_campaigns(self, audiences):
-        """Create Meta campaigns for FABIABox."""
-        
-        campaigns = {
-            "hardware_sales": {
-                "name": "FABIABox Hardware — Sales",
-                "objective": "CONVERSIONS",
-                "special_ad_categories": "NONE",
-                "budget": {
-                    "daily": 500,  # €500/day
-                    "currency": "EUR"
-                },
-                "optimization_goal": "LINK_CLICKS",
-                "bidding_strategy": "LOWEST_COST_WITH_CAP",
-                "target_cpa": 500  # €500 target CPA
-            },
-            "lead_generation": {
-                "name": "FABIABox — Lead Generation",
-                "objective": "LEAD_GENERATION",
-                "special_ad_categories": "NONE",
-                "budget": {
-                    "daily": 300,  # €300/day
-                    "currency": "EUR"
-                },
-                "lead_quality": "HIGH_INTENT"
-            },
-            "brand_awareness": {
-                "name": "FABIABox — Brand Awareness",
-                "objective": "BRAND_AWARENESS",
-                "special_ad_categories": "NONE",
-                "budget": {
-                    "daily": 200,  # €200/day
-                    "currency": "EUR"
-                }
-            },
-            "retargeting": {
-                "name": "FABIABox — Retargeting",
-                "objective": "CONVERSIONS",
-                "special_ad_categories": "NONE",
-                "budget": {
-                    "daily": 150,  # €150/day
-                    "currency": "EUR"
-                },
-                "audiences": [
-                    "website_visitors",
-                    "content_engagers",
-                    "pre_order_list"
-                ]
-            }
-        }
-        
-        return campaigns
-```
+> **The AI Co-Founder That Ships Your Company.**
 
-### Phase 3: Creative Generation
-
-```python
-class MetaCreativeAgent:
-    def generate_ads(self):
-        """Generate Meta ad creatives for FABIABox."""
-        
-        ads = {
-            "hardware_carousel": {
-                "type": "CAROUSEL",
-                "name": "FABIABox Product Tiers",
-                "cards": [
-                    {
-                        "title": "FABIABox Entry",
-                        "subtitle": "AMD Ryzen AI Max+",
-                        "description": "Startup-friendly AI hardware",
-                        "image": "fabiabox-entry.jpg",
-                        "cta": "Learn More",
-                        "link": "https://shop.fabiabox.com/entry"
-                    },
-                    {
-                        "title": "FABIABox Edge",
-                        "subtitle": "NVIDIA Thor",
-                        "description": "Edge AI deployment",
-                        "image": "fabiabox-edge.jpg",
-                        "cta": "Learn More",
-                        "link": "https://shop.fabiabox.com/edge"
-                    },
-                    {
-                        "title": "FABIABox Pro",
-                        "subtitle": "DGX Spark (1 PFlop)",
-                        "description": "AI research hardware",
-                        "image": "fabiabox-pro.jpg",
-                        "cta": "Learn More",
-                        "link": "https://shop.fabiabox.com/pro"
-                    },
-                    {
-                        "title": "FABIABox Enterprise",
-                        "subtitle": "DGX Roadmap (20 PFlop)",
-                        "description": "Enterprise AI infrastructure",
-                        "image": "fabiabox-enterprise.jpg",
-                        "cta": "Contact Us",
-                        "link": "https://shop.fabiabox.com/enterprise"
-                    }
-                ]
-            },
-            "video_ads": {
-                "type": "VIDEO",
-                "name": "FABIABox Vision",
-                "video": "fabiabox-vision.mp4",
-                "primary_text": "The AI Co-Founder That Ships Your Company.",
-                "headline": "Pre-buy FABIABox hardware or subscribe to agentic services.",
-                "description": "From €49.99/mo. Pre-buy reservation: €500.",
-                "cta": "Learn More"
-            },
-            "lead_ads": {
-                "type": "LEAD_AD",
-                "name": "FABIABox Pre-order Interest",
-                "primary_text": "Get priority access to cutting-edge AI hardware.",
-                "headline": "Pre-buy FABIABox — €500 Reservation",
-                "description": "Join the waiting list or pre-order now.",
-                "form": {
-                    "fields": ["full_name", "email", "company", "country", "product_interest"],
-                    "privacy_policy": "https://fabiabox.com/privacy"
-                }
-            },
-            "image_ads": {
-                "type": "IMAGE",
-                "name": "FABIABox Sovereign AI",
-                "image": "fabiabox-sovereign.jpg",
-                "primary_text": "No vendor lock-in. Sovereign AI infrastructure made possible.",
-                "headline": "FABIABox — Build Your Own AI Future",
-                "description": "From AMD Ryzen AI Max+ to NVIDIA DGX. Pre-order now.",
-                "cta": "Learn More"
-            }
-        }
-        
-        return ads
-```
-
-### Phase 4: Campaign Optimization
-
-```python
-class MetaOptimizationAgent:
-    def optimize_campaigns(self):
-        """Auto-optimize FABIABox Meta campaigns."""
-        
-        campaigns = self.get_campaign_performance()
-        
-        for campaign in campaigns:
-            # Scale winning campaigns
-            if campaign["roas"] > 3.0:
-                self.increase_budget(campaign["id"], 20)
-                
-            # Reduce spend on underperformers
-            elif campaign["cpa"] > 600:
-                self.decrease_budget(campaign["id"], 25)
-                
-            # A/B test creatives
-            for creative in campaign["creatives"]:
-                if creative["ctr"] > 0.02:
-                    # Scale winning creative
-                    self.increase_budget(campaign["id"], 15)
-                elif creative["ctr"] < 0.005:
-                    # Pause underperforming creative
-                    self.pause_ad(campaign["id"], creative["id"])
-            
-            # Refresh audiences
-            if campaign["days_active"] > 60:
-                self.refresh_audiences(campaign["id"])
-```
+Target: non-technical European entrepreneurs, pre-seed/seed stage, English-speaking EU.
 
 ---
 
-## Facebook & Instagram Strategy
+## Operational scripts
 
-### Facebook Strategy
-
-| Aspect | Details |
+| Script | Purpose |
 |--------|---------|
-| Primary use | Lead generation, brand awareness |
-| Target audience | B2B decision makers, tech founders |
-| Content type | Long-form posts, carousel ads, video ads |
-| Posting frequency | 3-5x/week (organic), daily (paid) |
-| Groups | Join AI/tech groups, share FABIABox insights |
+| `scripts/get_meta_long_lived_token.py` | Exchange/refresh tokens |
+| `scripts/update_facebook_page.py` | Sync page name/about/website/phone (requires `pages_manage_metadata`) |
+| `scripts/check_meta_health.py` | Daily account + campaign + ad + page status check |
 
-### Instagram Strategy
+### Daily health check
 
-| Aspect | Details |
-|--------|---------|
-| Primary use | Brand building, product showcase |
-| Target audience | AI enthusiasts, tech founders, developers |
-| Content type | Reels, Stories, carousels, product photos |
-| Posting frequency | 5-7x/week (organic), daily (paid) |
-| Hashtags | #SovereignAI #AIInfrastructure #EdgeComputing #AGI #AIHardware #FABIABox |
+A cron job runs every morning at 09:00 CET and Telegrams the summary:
 
-### Content Mix
+```bash
+cron: meta-daily-health
+command: cd /home/ansen/projects/fabiaweb_marketing && python scripts/check_meta_health.py
+```
 
-| Content Type | Percentage | Examples |
-|-------------|-----------|----------|
-| Product showcase | 30% | Hardware photos, product demos |
-| Technical content | 25% | Architecture diagrams, benchmarks |
-| Behind-the-scenes | 20% | Development updates, team culture |
-| Industry insights | 15% | AI trends, thought leadership |
-| Community engagement | 10% | Polls, Q&A, user-generated content |
+To run it manually:
 
----
+```bash
+python scripts/check_meta_health.py
+```
 
-## Next Steps
-
-1. [ ] Set up Meta Developer account and API access
-2. [ ] Create Meta Business Manager for FABIABox
-3. [ ] Configure OAuth2 credentials
-4. [ ] Set up Facebook Pixel on fabiabox.com
-5. [ ] Build initial audiences
-6. [ ] Create campaigns for each product tier
-7. [ ] Generate ad creatives (images, videos, carousels)
-8. [ ] Launch campaigns and begin A/B testing
-9. [ ] Implement automated optimization
+It reports:
+- Ad account status, spend cap, lifetime spend
+- Campaign status and lifetime impressions/clicks/spend
+- Ad status and lifetime performance per variant
+- Facebook page name, about, website, phone, fan count
 
 ---
 
-*Last updated: 2026-07-07*
+## Facebook page branding
+
+Use this copy if updating the page manually:
+
+| Field | Copy |
+|-------|------|
+| **Name** | FABIABox |
+| **Username** | @fabiabox |
+| **Category** | Software Company |
+| **About** | The AI Co-Founder That Ships Your Company. |
+| **Description** | Fabia is the AI Agent that turns your idea into a live product and business. Built for non-technical founders in Europe. Own your AI, your data, and your stack. |
+| **Website** | https://fabiabox.com |
+| **Phone** | +33 4 84 25 00 00 |
+| **Company overview** | FABIABox helps founders go from idea to operating company using localized AI agents that build, launch, and run the business with you. |
+| **Mission** | Make every founder capable of shipping a real company without renting their intelligence from a cloud provider. |
+| **CTA button** | Learn More → https://fabiabox.com |
+
+Page renames via the API can be rejected if the app lacks the right capability; if so, change the name directly in the Facebook UI and wait for review.
+
+---
+
+## Monitoring cadence
+
+| Frequency | Action |
+|-----------|--------|
+| **Daily 09:00 CET** | Auto health check (account, campaigns, ads, page) |
+| **Daily** | Sync leads from landing page / Meta forms |
+| **Weekly** | Review CTR/CPC per creative; pause underperformers, scale winners |
+| **~Day 55** | Refresh long-lived token with `--refresh` |
+| **Monthly** | Budget pacing, audience refresh, new creative batch |
+
+---
+
+## Optimization rules
+
+- Pause any creative with **< 0.5% CTR** after ~3,000 impressions.
+- Scale budget on any creative with **> 2% CTR** and cost-per-click under target.
+- Keep only one adset while learning budget is small; split audiences only after 50+ conversions per week.
+- Refresh ad copy/images every 4–6 weeks to avoid fatigue.
+
+---
+
+## Next steps
+
+1. [x] Exchange long-lived token and fetch page token
+2. [x] Create retargeting campaign with 6 creative variants
+3. [x] Consolidate adsets into single `EU Founders` adset
+4. [x] Schedule daily health-check cron
+5. [ ] Complete Facebook page rename from SquadShelf to FABIABox
+6. [ ] Set up Facebook Pixel events on fabiabox.com
+7. [ ] Connect lead-capture form to Meta leads / CRM
+8. [ ] Build lookalike audience once custom audience reaches 100+ people
+9. [ ] Add LinkedIn and email channels to the loop
+
+---
+
+*Last updated: 2026-07-07*  
 *Author: Andrea (IABAI)*
