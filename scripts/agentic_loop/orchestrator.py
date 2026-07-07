@@ -34,6 +34,12 @@ class Orchestrator:
 
             publisher = self.publishers[channel]
             metadata = {"subject": f"FABIABox: {brief.angle}"} if channel == "email" else {}
+            if brief.link:
+                metadata["link"] = brief.link
             results[channel] = publisher.publish(str(content), metadata)
 
         return results
+
+    def validate_meta(self) -> dict:
+        publisher = self.publishers["meta"]
+        return publisher.validate()

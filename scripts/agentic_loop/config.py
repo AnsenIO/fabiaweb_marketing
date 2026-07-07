@@ -30,11 +30,22 @@ def load_config():
     cfg["channels"]["meta"]["ad_account_id"] = os.getenv(
         "META_AD_ACCOUNT_ID", cfg["channels"]["meta"].get("ad_account_id", "")
     )
-    cfg["channels"]["meta"]["pixel_id"] = os.getenv(
-        "META_PIXEL_ID", cfg["channels"]["meta"].get("pixel_id", "")
+    cfg["llm"]["model"] = os.getenv("OPENAI_MODEL", cfg["llm"].get("model", "default"))
+
+    cfg["channels"]["meta"]["business_manager_id"] = os.getenv(
+        "META_BUSINESS_MANAGER_ID", cfg["channels"]["meta"].get("business_manager_id", "")
+    )
+    cfg["channels"]["meta"]["page_id"] = os.getenv(
+        "META_PAGE_ID", cfg["channels"]["meta"].get("page_id", "")
+    )
+    cfg["channels"]["meta"]["ad_status"] = os.getenv(
+        "META_AD_STATUS", cfg["channels"]["meta"].get("ad_status", "PAUSED")
     )
     cfg["channels"]["meta"]["access_token"] = os.getenv(
         "META_ACCESS_TOKEN", cfg["channels"]["meta"].get("access_token", "")
+    )
+    cfg["channels"]["meta"]["pixel_id"] = os.getenv(
+        "META_PIXEL_ID", cfg["channels"]["meta"].get("pixel_id", "")
     )
 
     return cfg

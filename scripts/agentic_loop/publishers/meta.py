@@ -1,4 +1,12 @@
+import json
+
+import requests
+
 from .base import Publisher
+
+
+API_VERSION = "v19.0"
+BASE_URL = f"https://graph.facebook.com/{API_VERSION}"
 
 
 class MetaPublisher(Publisher):
@@ -9,15 +17,182 @@ class MetaPublisher(Publisher):
         self.ad_account_id = cfg.get("ad_account_id", "")
         self.access_token = cfg.get("access_token", "")
         self.pixel_id = cfg.get("pixel_id", "")
+        self.page_id = cfg.get("page_id", "")
+        self.status = cfg.get("ad_status", "PAUSED").upper()
+
+    def _request(
+        self,
+        method: str,
+        path: str,
+        params: dict | None = None,
+        json_data: dict | None = None,
+    ) -> dict:
+        url = f"{BASE_URL}/{path}"
+        params = params or {}
+        params["access_token"] = self.access_token
+        try:
+            resp = requests.request(method, url, params=params, json=json_data, timeout=60)
+            data = resp.json()
+            if resp.status_code >= 400 or "error" in data:
+                raise RuntimeError(f"Meta API error: {data.get('error', data)}")
+            return data
+        except requests.RequestException as exc:
+            raise RuntimeError(f"Meta API request failed: {exc}") from exc
+
+    def validate(self) -> dict:
+        if not self.access_token:
+            raise RuntimeError("META_ACCESS_TOKEN is missing")
+        if not self.ad_account_id:
+            raise RuntimeError("META_AD_ACCOUNT_ID is missing")
+
+        me = self._request("GET", "me", params={"fields": "id,name,email"})
+        account = self._request(
+            "GET",
+            f"act_{self.ad_account_id.lstrip('act_')}",
+            params={"fields": "account_id,name,account_status,currency,timezone_name"},
+        )
+        campaigns = self._request(
+            "GET",
+            f"act_{self.ad_account_id.lstrip('act_')}/campaigns",
+            params={"limit": 1},
+        )
+        return {
+            "user": me,
+            "ad_account": account,
+            "existing_campaigns": campaigns.get("data", []),
+        }
+
+    def create_campaign(self, name: str, objective: str) -> str:
+        path = f"act_{self.ad_account_id.lstrip('act_')}/campaigns"
+        payload = {
+            "name": name,
+            "objective": objective,
+            "status": self.status,
+            "special_ad_categories": "[]",
+        }
+        result = self._request("POST", path, json_data=payload)
+        return result["id"]
+
+    def create_adset(
+        self,
+        campaign_id: str,
+        name: str,
+        daily_budget_eur: float,
+        custom_audience_id: str | None = None,
+        optimization_goal: str = "LINK_CLICKS",
+        billing_event: str = "IMPRESSIONS",
+    ) -> str:
+        path = f"act_{self.ad_account_id.lstrip('act_')}/adsets"
+        targeting = {
+            "geo_locations": {"countries": ["FR", "DE", "GB", "ES", "IT", "NL"]},
+            "age_min": 25,
+            "age_max": 55,
+        }
+        if custom_audience_id:
+            targeting["custom_audiences"] = [{"id": custom_audience_id}]
+
+        payload = {
+            "name": name,
+            "campaign_id": campaign_id,
+            "daily_budget": int(daily_budget_eur * 100),  # cents
+            "billing_event": billing_event,
+            "optimization_goal": optimization_goal,
+            "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+            "targeting": json.dumps(targeting),
+            "status": self.status,
+        }
+        if self.pixel_id:
+            payload["promoted_object"] = json.dumps(
+                {"pixel_id": self.pixel_id, "custom_event_type": "VIEW_CONTENT"}
+            )
+
+        result = self._request("POST", path, json_data=payload)
+        return result["id"]
+
+    def create_adcreative(
+        self,
+        name: str,
+        message: str,
+        link: str,
+        headline: str,
+        cta_type: str = "LEARN_MORE",
+    ) -> str:
+        if not self.page_id:
+            raise RuntimeError("META_PAGE_ID is required to create ad creatives")
+
+        path = f"act_{self.ad_account_id.lstrip('act_')}/adcreatives"
+        payload = {
+            "name": name,
+            "object_story_spec": json.dumps(
+                {
+                    "page_id": self.page_id,
+                    "link_data": {
+                        "message": message,
+                        "link": link,
+                        "headline": headline,
+                        "call_to_action": {"type": cta_type, "value": {"link": link}},
+                    },
+                }
+            ),
+            "degrees_of_freedom_spec": json.dumps({"creative_features_spec": {"enroll_status": "OPT_OUT"}}),
+        }
+        result = self._request("POST", path, json_data=payload)
+        return result["id"]
+
+    def create_ad(self, adset_id: str, creative_id: str, name: str) -> str:
+        path = f"act_{self.ad_account_id.lstrip('act_')}/ads"
+        payload = {
+            "name": name,
+            "adset_id": adset_id,
+            "creative": json.dumps({"creative_id": creative_id}),
+            "status": self.status,
+        }
+        result = self._request("POST", path, json_data=payload)
+        return result["id"]
 
     def publish(self, content: str, metadata: dict) -> dict:
         if not self.ad_account_id or not self.access_token:
             return {"status": "skipped", "reason": "missing Meta ad account or access token"}
 
-        # TODO: create campaign/adset/adcreative via Marketing API
+        if not self.page_id:
+            return {"status": "skipped", "reason": "missing META_PAGE_ID"}
+
+        campaign_cfg = self.cfg.get("campaigns", {}).get("retargeting_website", {})
+        campaign_name = campaign_cfg.get("name", "FABIABox — Website Retargeting")
+        objective = campaign_cfg.get("objective", "OUTCOME_TRAFFIC")
+        daily_budget = campaign_cfg.get("daily_budget_eur", 20)
+
+        # Parse creative JSON if provided; otherwise use defaults
+        try:
+            creative = json.loads(content)
+        except json.JSONDecodeError:
+            creative = {
+                "headline": "Ship your company with AI",
+                "primary_text": content[:400],
+                "cta_button": "LEARN_MORE",
+            }
+
+        campaign_id = self.create_campaign(campaign_name, objective)
+        adset_id = self.create_adset(
+            campaign_id,
+            name=f"{campaign_name} — AdSet",
+            daily_budget_eur=daily_budget,
+        )
+        creative_id = self.create_adcreative(
+            name=f"{campaign_name} — Creative",
+            message=creative.get("primary_text", ""),
+            link=metadata.get("link", "https://shop.fabiabox.com"),
+            headline=creative.get("headline", ""),
+            cta_type=creative.get("cta_button", "LEARN_MORE"),
+        )
+        ad_id = self.create_ad(adset_id, creative_id, name=f"{campaign_name} — Ad")
+
         return {
-            "status": "published",
+            "status": "created",
             "platform": "meta",
-            "ad_account": self.ad_account_id,
-            "creative": metadata,
+            "campaign_id": campaign_id,
+            "adset_id": adset_id,
+            "creative_id": creative_id,
+            "ad_id": ad_id,
+            "ad_status": self.status,
         }

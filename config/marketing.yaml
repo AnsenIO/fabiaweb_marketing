@@ -31,12 +31,17 @@ channels:
   meta:
     enabled: true
     ad_account_id: ""
+    business_manager_id: ""
     pixel_id: ""
+    page_id: ""
+    access_token: ""
+    # PAUSED = safe default; set ACTIVE only when you are ready to spend
+    ad_status: PAUSED
     campaigns:
       retargeting_website:
         name: "FABIABox — Website Retargeting"
-        objective: CONVERSIONS
-        budget_eur_daily: 20
+        objective: OUTCOME_TRAFFIC
+        daily_budget_eur: 20
         audiences:
           - website_visitors
           - waitlist

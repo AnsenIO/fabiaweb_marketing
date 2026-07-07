@@ -20,12 +20,32 @@ def main():
     parser.add_argument(
         "--run", action="store_true", help="Actually publish (default is dry-run)"
     )
+    parser.add_argument(
+        "--validate", action="store_true", help="Validate Meta API credentials without publishing"
+    )
     args = parser.parse_args()
 
     cfg = load_config()
+
+    if args.validate:
+        print("🔍 Validating Meta API credentials...")
+        orchestrator = Orchestrator(cfg, dry_run=True)
+        try:
+            result = orchestrator.validate_meta()
+            print("✅ Meta credentials valid:")
+            print(f"  User: {result['user'].get('name')} ({result['user'].get('id')})")
+            print(f"  Ad account: {result['ad_account'].get('name')} ({result['ad_account'].get('account_id')})")
+            print(f"  Status: {result['ad_account'].get('account_status')}")
+            print(f"  Existing campaigns: {len(result['existing_campaigns'])}")
+        except Exception as exc:
+            print(f"❌ Validation failed: {exc}")
+        return
+
     dry_run = not args.run
     if dry_run:
         print("🔶 DRY-RUN mode. No content will be published.")
+    else:
+        print("🔴 LIVE mode. Campaigns will be created with status: " + cfg["channels"]["meta"].get("ad_status", "PAUSED"))
 
     brief = ContentBrief(
         angle=args.angle,
