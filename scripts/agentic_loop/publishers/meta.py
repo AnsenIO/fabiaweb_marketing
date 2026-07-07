@@ -1,6 +1,7 @@
 import hmac
 import hashlib
 import json
+import time
 
 import requests
 
@@ -48,14 +49,29 @@ class MetaPublisher(Publisher):
         proof = self._proof()
         if proof:
             params["appsecret_proof"] = proof
-        try:
-            resp = requests.request(method, url, params=params, json=json_data, timeout=60)
-            data = resp.json()
-            if resp.status_code >= 400 or "error" in data:
-                raise RuntimeError(f"Meta API error: {data.get('error', data)}")
-            return data
-        except requests.RequestException as exc:
-            raise RuntimeError(f"Meta API request failed: {exc}") from exc
+        last_exception = None
+        for attempt in range(1, 4):
+            try:
+                resp = requests.request(method, url, params=params, json=json_data, timeout=60)
+                data = resp.json()
+                if resp.status_code >= 400 or "error" in data:
+                    error = data.get("error", {})
+                    code = error.get("code")
+                    is_transient = error.get("is_transient") or code in (1, 2, 4, 17, 80000, 80001, 80002, 80003, 80004, 80005)
+                    if is_transient and attempt < 3:
+                        wait = 2 ** attempt
+                        print(f"  ⚠️ Meta API transient error (attempt {attempt}), retrying in {wait}s...")
+                        time.sleep(wait)
+                        continue
+                    raise RuntimeError(f"Meta API error: {error}")
+                return data
+            except requests.RequestException as exc:
+                last_exception = exc
+                if attempt < 3:
+                    wait = 2 ** attempt
+                    print(f"  ⚠️ Meta API network error (attempt {attempt}), retrying in {wait}s...")
+                    time.sleep(wait)
+        raise RuntimeError(f"Meta API request failed: {last_exception}") from last_exception
 
     def upload_image(self, image_path: str) -> str:
         if not image_path:
@@ -249,12 +265,15 @@ class MetaPublisher(Publisher):
             }
 
         campaign_id = self.create_campaign(campaign_name, objective)
+        time.sleep(1)
         adset_id = self.create_adset(
             campaign_id,
             name=f"{campaign_name} — AdSet",
             daily_budget_eur=daily_budget,
         )
+        time.sleep(1)
         image_hash = self.upload_image(self.image_path)
+        time.sleep(1)
         creative_id = self.create_adcreative(
             name=f"{campaign_name} — Creative",
             message=creative.get("primary_text", ""),
@@ -263,6 +282,7 @@ class MetaPublisher(Publisher):
             image_hash=image_hash,
             cta_type=creative.get("cta_button", "LEARN_MORE"),
         )
+        time.sleep(1)
         ad_id = self.create_ad(adset_id, creative_id, name=f"{campaign_name} — Ad")
 
         return {
