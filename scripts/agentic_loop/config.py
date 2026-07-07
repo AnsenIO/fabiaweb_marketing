@@ -30,6 +30,12 @@ def load_config():
     cfg["channels"]["meta"]["ad_account_id"] = os.getenv(
         "META_AD_ACCOUNT_ID", cfg["channels"]["meta"].get("ad_account_id", "")
     )
+    cfg["channels"]["meta"]["app_id"] = os.getenv(
+        "META_APP_ID", cfg["channels"]["meta"].get("app_id", "")
+    )
+    cfg["channels"]["meta"]["app_secret"] = os.getenv(
+        "META_APP_SECRET", cfg["channels"]["meta"].get("app_secret", "")
+    )
     cfg["llm"]["model"] = os.getenv("OPENAI_MODEL", cfg["llm"].get("model", "default"))
 
     cfg["channels"]["meta"]["business_manager_id"] = os.getenv(

@@ -1,3 +1,5 @@
+import hmac
+import hashlib
 import json
 
 import requests
@@ -16,9 +18,19 @@ class MetaPublisher(Publisher):
         self.cfg = cfg
         self.ad_account_id = cfg.get("ad_account_id", "")
         self.access_token = cfg.get("access_token", "")
+        self.app_secret = cfg.get("app_secret", "")
         self.pixel_id = cfg.get("pixel_id", "")
         self.page_id = cfg.get("page_id", "")
         self.status = cfg.get("ad_status", "PAUSED").upper()
+
+    def _proof(self) -> str:
+        if not self.app_secret or not self.access_token:
+            return ""
+        return hmac.new(
+            self.app_secret.encode("utf-8"),
+            self.access_token.encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
 
     def _request(
         self,
@@ -30,6 +42,9 @@ class MetaPublisher(Publisher):
         url = f"{BASE_URL}/{path}"
         params = params or {}
         params["access_token"] = self.access_token
+        proof = self._proof()
+        if proof:
+            params["appsecret_proof"] = proof
         try:
             resp = requests.request(method, url, params=params, json=json_data, timeout=60)
             data = resp.json()
