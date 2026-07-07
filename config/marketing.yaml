@@ -35,8 +35,16 @@ channels:
     pixel_id: ""
     page_id: ""
     access_token: ""
+    app_id: ""
+    app_secret: ""
     # PAUSED = safe default; set ACTIVE only when you are ready to spend
     ad_status: PAUSED
+    # EU DSA fields: who the ad promotes and who pays for it
+    dsa:
+      beneficiary: "FABIABox"
+      payor: "IABAI"
+    # Creative asset (must be publicly accessible)
+    image_url: "https://raw.githubusercontent.com/AnsenIO/fabiaweb_marketing/main/assets/images/fabia_ad_1.png"
     campaigns:
       retargeting_website:
         name: "FABIABox — Website Retargeting"

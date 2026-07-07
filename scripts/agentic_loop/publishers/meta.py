@@ -22,6 +22,8 @@ class MetaPublisher(Publisher):
         self.pixel_id = cfg.get("pixel_id", "")
         self.page_id = cfg.get("page_id", "")
         self.status = cfg.get("ad_status", "PAUSED").upper()
+        self.dsa = cfg.get("dsa", {}) or {}
+        self.image_url = cfg.get("image_url", "")
 
     def _proof(self) -> str:
         if not self.app_secret or not self.access_token:
@@ -83,7 +85,8 @@ class MetaPublisher(Publisher):
             "name": name,
             "objective": objective,
             "status": self.status,
-            "special_ad_categories": "[]",
+            "special_ad_categories": [],
+            "is_adset_budget_sharing_enabled": False,
         }
         result = self._request("POST", path, json_data=payload)
         return result["id"]
@@ -102,6 +105,7 @@ class MetaPublisher(Publisher):
             "geo_locations": {"countries": ["FR", "DE", "GB", "ES", "IT", "NL"]},
             "age_min": 25,
             "age_max": 55,
+            "targeting_automation": {"advantage_audience": 0},
         }
         if custom_audience_id:
             targeting["custom_audiences"] = [{"id": custom_audience_id}]
@@ -121,6 +125,11 @@ class MetaPublisher(Publisher):
                 {"pixel_id": self.pixel_id, "custom_event_type": "VIEW_CONTENT"}
             )
 
+        if self.dsa.get("beneficiary"):
+            payload["dsa_beneficiary"] = self.dsa["beneficiary"]
+        if self.dsa.get("payor"):
+            payload["dsa_payor"] = self.dsa["payor"]
+
         result = self._request("POST", path, json_data=payload)
         return result["id"]
 
@@ -135,6 +144,15 @@ class MetaPublisher(Publisher):
         if not self.page_id:
             raise RuntimeError("META_PAGE_ID is required to create ad creatives")
 
+        allowed_ctas = {
+            "LEARN_MORE", "SIGN_UP", "SHOP_NOW", "DOWNLOAD", "CONTACT_US",
+            "BOOK_NOW", "GET_OFFER", "SUBSCRIBE", "APPLY_NOW", "GET_QUOTE",
+            "BUY_NOW", "MESSAGE_PAGE", "WHATSAPP_MESSAGE", "GET_DIRECTIONS",
+        }
+        normalized_cta = cta_type.upper().replace(" ", "_")
+        if normalized_cta not in allowed_ctas:
+            normalized_cta = "LEARN_MORE"
+
         path = f"act_{self.ad_account_id.lstrip('act_')}/adcreatives"
         payload = {
             "name": name,
@@ -144,12 +162,12 @@ class MetaPublisher(Publisher):
                     "link_data": {
                         "message": message,
                         "link": link,
-                        "headline": headline,
-                        "call_to_action": {"type": cta_type, "value": {"link": link}},
+                        "name": headline,
+                        "image_url": self.image_url,
+                        "call_to_action": {"type": normalized_cta, "value": {"link": link}},
                     },
                 }
             ),
-            "degrees_of_freedom_spec": json.dumps({"creative_features_spec": {"enroll_status": "OPT_OUT"}}),
         }
         result = self._request("POST", path, json_data=payload)
         return result["id"]
