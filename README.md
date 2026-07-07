@@ -16,13 +16,29 @@ Build a repeatable, documented pipeline for marketing FABIABox hardware and agen
 
 ```
 fabiaweb_marketing/
-├── README.md           # This file
-├── docs/               # Marketing strategy, research, campaign docs
-├── scripts/            # Automation scripts
-├── templates/          # Email, social media post templates
-├── data/               # Campaign data, analytics, metrics
-└── config/             # Platform API configs, credentials
+├── README.md                    # This file
+├── config/
+│   ├── marketing.yaml           # Channel config, brand settings, LLM endpoint
+│   └── .env.example             # Credential template
+├── docs/                        # Strategy and platform playbooks
+│   ├── agents/                  # Platform-specific execution guides
+│   └── strategy/                # Master, traction, and investor strategies
+├── scripts/
+│   └── agentic_loop/            # End-to-end autonomous marketing loop
+├── templates/                   # Brand voice, content briefs, creative templates
+├── literature/                  # Research PDFs
+└── data/                        # Campaign data, analytics, metrics
 ```
+
+## Quick start
+
+1. `cp config/.env.example config/.env` and fill in credentials.
+2. `pip install -r requirements.txt`
+3. Run a dry-run content generation:
+   ```bash
+   python -m scripts.agentic_loop.main --angle "founder transformation" --product "Agentic Build Plan"
+   ```
+4. To actually publish, add `--run` (requires credentials).
 
 ## Current Products
 
@@ -44,7 +60,8 @@ fabiaweb_marketing/
 
 - [x] Repo cloned under `~/projects/fabiaweb_marketing`
 - [x] Dual-track strategy defined (traction + investor)
-- [ ] Platform inventory audit (where to market)
+- [x] Agentic loop skeleton built (Email, X, Discord, Meta)
+- [ ] Platform credentials configured
 - [ ] Brand assets collection
 - [ ] Content calendar setup
 - [ ] Social media automation pipeline

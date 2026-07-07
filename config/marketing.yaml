@@ -1,0 +1,51 @@
+brand:
+  name: FABIABox
+  tagline: "The AI Co-Founder That Ships Your Company."
+  website: https://fabiabox.com
+  shop: https://shop.fabiabox.com
+  currency: EUR
+
+content_pillars:
+  - founder_transformation
+  - process_transparency
+  - sovereign_ai
+  - traction_receipts
+
+channels:
+  email:
+    enabled: true
+    provider: mailtrain
+    list_id: ""
+    sender: "andrea@iabai.com"
+    welcome_sequence_days: [0, 2, 5, 8, 12]
+
+  twitter:
+    enabled: true
+    handle: "@fabiabox"
+
+  discord:
+    enabled: true
+    webhook_url: ""
+    announcement_channel: "#announcements"
+
+  meta:
+    enabled: true
+    ad_account_id: ""
+    pixel_id: ""
+    campaigns:
+      retargeting_website:
+        name: "FABIABox — Website Retargeting"
+        objective: CONVERSIONS
+        budget_eur_daily: 20
+        audiences:
+          - website_visitors
+          - waitlist
+          - content_engagers
+
+llm:
+  base_url: "http://127.0.0.1:11435/v1"
+  api_key: "not-needed"
+  model: "default"
+  temperature: 0.7
+
+dry_run: true
