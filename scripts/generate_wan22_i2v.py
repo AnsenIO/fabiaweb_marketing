@@ -87,7 +87,8 @@ def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     saved = []
     for node_id, node_output in outputs.items():
-        for vid in node_output.get("gifs", []):
+        # SaveVideo may return images (animated) or gifs
+        for vid in node_output.get("images", []):
             data = fetch_video(vid["filename"], vid.get("subfolder", ""), vid.get("type", "output"))
             out_path = os.path.join(OUTPUT_DIR, vid["filename"])
             with open(out_path, "wb") as f:

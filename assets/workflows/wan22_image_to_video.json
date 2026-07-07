@@ -8,7 +8,7 @@
     "class_type": "CLIPLoader"
   },
   "73": {
-    "inputs": {"vae_name": "wan2.2_vae.safetensors"},
+    "inputs": {"vae_name": "wan_2.1_vae.safetensors"},
     "class_type": "VAELoader"
   },
   "75": {
@@ -85,21 +85,23 @@
   },
   "202": {
     "inputs": {
+      "positive": ["89", 0],
       "vae": ["73", 0],
       "width": 640,
       "height": 640,
       "length": 81,
       "batch_size": 1,
+      "guidance_type": "v2 (replace)",
       "start_image": ["201", 0]
     },
-    "class_type": "Wan22ImageToVideoLatent"
+    "class_type": "HunyuanImageToVideo"
   },
   "81": {
     "inputs": {
       "model": ["82", 0],
-      "positive": ["89", 0],
+      "positive": ["202", 0],
       "negative": ["72", 0],
-      "latent_image": ["202", 0],
+      "latent_image": ["202", 1],
       "add_noise": "enable",
       "noise_seed": 42,
       "steps": 4,
@@ -115,7 +117,7 @@
   "78": {
     "inputs": {
       "model": ["86", 0],
-      "positive": ["89", 0],
+      "positive": ["202", 0],
       "negative": ["72", 0],
       "latent_image": ["81", 0],
       "add_noise": "disable",
