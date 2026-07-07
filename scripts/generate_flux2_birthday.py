@@ -61,14 +61,20 @@ def fetch_image(filename, subfolder="", folder_type="output"):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, default=random.randint(0, 2**32 - 1))
+    parser.add_argument("--width", type=int, default=1344)
+    parser.add_argument("--height", type=int, default=1344)
     parser.add_argument("--prompt", default=PROMPT)
     args = parser.parse_args()
 
     workflow = load_workflow()
     workflow["6"]["inputs"]["text"] = args.prompt
     workflow["25"]["inputs"]["noise_seed"] = args.seed
+    workflow["47"]["inputs"]["width"] = args.width
+    workflow["47"]["inputs"]["height"] = args.height
+    workflow["48"]["inputs"]["width"] = args.width
+    workflow["48"]["inputs"]["height"] = args.height
 
-    print(f"Queueing Flux 2 birthday generation with seed {args.seed}...")
+    print(f"Queueing Flux 2 birthday generation ({args.width}x{args.height}) with seed {args.seed}...")
     result = queue_prompt(workflow)
     prompt_id = result["prompt_id"]
     print(f"Prompt ID: {prompt_id}")
