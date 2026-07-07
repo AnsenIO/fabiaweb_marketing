@@ -103,7 +103,25 @@ class MetaPublisher(Publisher):
             "existing_campaigns": campaigns.get("data", []),
         }
 
+    def _find_campaign_by_name(self, name: str) -> str | None:
+        path = f"act_{self.ad_account_id.lstrip('act_')}/campaigns"
+        params = {
+            "fields": "id,name",
+            "effective_status": "['PAUSED','ACTIVE']",
+            "limit": 100,
+        }
+        data = self._request("GET", path, params=params)
+        for campaign in data.get("data", []):
+            if campaign.get("name", "").strip().lower() == name.strip().lower():
+                return campaign["id"]
+        return None
+
     def create_campaign(self, name: str, objective: str) -> str:
+        existing = self._find_campaign_by_name(name)
+        if existing:
+            print(f"  ➡️ Reusing existing campaign {existing}")
+            return existing
+
         path = f"act_{self.ad_account_id.lstrip('act_')}/campaigns"
         payload = {
             "name": name,
