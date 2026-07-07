@@ -42,9 +42,19 @@ fabiaweb_marketing/
 
 ## Status
 
+- [x] Repo cloned under `~/projects/fabiaweb_marketing`
+- [x] Dual-track strategy defined (traction + investor)
 - [ ] Platform inventory audit (where to market)
 - [ ] Brand assets collection
 - [ ] Content calendar setup
 - [ ] Social media automation pipeline
 - [ ] Email campaign automation
 - [ ] Analytics tracking setup
+
+## Strategy docs
+
+| File | Purpose |
+|------|---------|
+| [docs/strategy/master_strategy.md](docs/strategy/master_strategy.md) | Overall thesis, phases, shared positioning, 90-day roadmap |
+| [docs/strategy/traction_strategy.md](docs/strategy/traction_strategy.md) | Drive shop.fabiabox.com interest and purchases |
+| [docs/strategy/investor_strategy.md](docs/strategy/investor_strategy.md) | Convert traction into a €500k–€1M Pre-Seed SAFE |
