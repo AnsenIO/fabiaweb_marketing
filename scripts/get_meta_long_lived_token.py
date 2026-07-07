@@ -25,19 +25,23 @@ def main():
         sys.exit(1)
 
     if len(sys.argv) < 2:
-        print("Usage: python scripts/get_meta_long_lived_token.py <path_to_short_token_file>")
+        print("Usage: python scripts/get_meta_long_lived_token.py <token_or_file>")
+        print("  token_or_file: either the short-lived token itself, or a path to a file containing it")
         sys.exit(1)
 
-    token_file = Path(sys.argv[1])
-    if not token_file.exists():
-        print(f"Error: token file not found: {token_file}")
-        sys.exit(1)
+    token_arg = sys.argv[1]
+    token_file = Path(token_arg)
+    if token_file.exists():
+        short_token = token_file.read_text().strip()
+    else:
+        short_token = token_arg.strip()
 
-    short_token = token_file.read_text().strip()
     if not short_token:
-        print("Error: token file is empty")
+        print("Error: token is empty")
         sys.exit(1)
 
+    # Exact GET endpoint documented at:
+    # https://developers.facebook.com/docs/facebook-login/guides/access-tokens/get-long-lived
     url = "https://graph.facebook.com/v19.0/oauth/access_token"
     params = {
         "grant_type": "fb_exchange_token",
@@ -45,6 +49,13 @@ def main():
         "client_secret": app_secret,
         "fb_exchange_token": short_token,
     }
+
+    masked_token = f"{short_token[:8]}...{short_token[-8:]}"
+    print(f"Exchanging token via GET {url}")
+    print(f"  grant_type=fb_exchange_token")
+    print(f"  client_id={app_id}")
+    print(f"  client_secret=***")
+    print(f"  fb_exchange_token={masked_token}")
 
     try:
         resp = requests.get(url, params=params, timeout=60)
