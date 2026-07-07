@@ -15,9 +15,14 @@ WORKFLOW_PATH = os.path.join(os.path.dirname(__file__), "..", "assets", "workflo
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "comfy_outputs")
 
 PROMPT = (
-    "Premium dark tech birthday graphic for FABIABox. A sleek black AI co-founder box with a glowing candle, "
-    "navy and electric orange confetti, deep charcoal background, high-end minimalist product aesthetic, "
-    "photorealistic, 32K clarity."
+    "Premium product photography of a compact dark gunmetal aluminum mini PC workstation, the FABIABox, "
+    "placed on a light oak wooden desk. Rectangular black anodized aluminum chassis with sharp clean edges, "
+    "prominent exposed copper-gold heatsink fin array on the top, front panel with USB-A, USB-C, 3.5mm audio jack, "
+    "and a square power button with a soft status LED. A single lit birthday candle sits on top of the heatsink, "
+    "warm flame glow reflecting on the metal. Navy and electric orange confetti falling gently around. "
+    "Soft warm directional key light from the upper left, subtle shadows, dark charcoal blurred background, "
+    "high-end minimalist tech product aesthetic, photorealistic, 32K clarity, shallow depth of field. "
+    "No text, no logos, no typography, no words."
 )
 
 
