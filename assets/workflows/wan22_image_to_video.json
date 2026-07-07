@@ -91,7 +91,7 @@
       "height": 640,
       "length": 81,
       "batch_size": 1,
-      "guidance_type": "v2 (replace)",
+      "guidance_type": "v1 (concat)",
       "start_image": ["201", 0]
     },
     "class_type": "HunyuanImageToVideo"
