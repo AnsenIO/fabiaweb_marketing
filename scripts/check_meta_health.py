@@ -9,10 +9,19 @@ from agentic_loop.config import load_config
 from agentic_loop.publishers.meta import MetaPublisher
 
 
-def fmt_cents(eur_cents):
-    if eur_cents is None:
+def fmt_eur(value):
+    if value is None or value == "":
         return "n/a"
-    return f"€{eur_cents / 100:,.2f}"
+    try:
+        return f"€{float(value) / 100:,.2f}"
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def fmt_int(value):
+    if value is None:
+        return "n/a"
+    return str(value)
 
 
 def main():
@@ -33,8 +42,8 @@ def main():
         print(f"Ad account: {account.get('name')} ({account.get('account_id')})")
         print(f"Status: {status_label}")
         print(f"Currency: {account.get('currency')}")
-        print(f"Spend cap: {fmt_cents(account.get('spend_cap'))}")
-        print(f"Amount spent: {fmt_cents(account.get('amount_spent'))}\n")
+        print(f"Spend cap: {fmt_eur(account.get('spend_cap'))}")
+        print(f"Amount spent: {fmt_eur(account.get('amount_spent'))}\n")
     except Exception as exc:
         print(f"Account check failed: {exc}\n")
 
@@ -43,12 +52,12 @@ def main():
         campaigns = p._request(
             "GET",
             f"act_{p.ad_account_id.lstrip('act_')}/campaigns",
-            params={"fields": "id,name,status,effective_status,objective,daily_budget,lifetime_budget,budget_remaining,insights{spend,impressions,clicks,reach}", "limit": 50},
+            params={"fields": "id,name,status,effective_status,objective,daily_budget,lifetime_budget,budget_remaining,insights.date_preset(maximum){spend,impressions,clicks,reach}", "limit": 50},
         )
         print(f"Campaigns: {len(campaigns.get('data', []))}")
         for c in campaigns.get("data", []):
             insights = (c.get("insights") or {}).get("data", [{}])[0]
-            print(f"  - {c.get('name')} | status={c.get('effective_status')} | objective={c.get('objective')} | spend={fmt_cents(insights.get('spend'))} | impressions={insights.get('impressions', 0)} | clicks={insights.get('clicks', 0)}")
+            print(f"  - {c.get('name')} | status={c.get('effective_status')} | objective={c.get('objective')} | spend={fmt_eur(insights.get('spend'))} | impressions={fmt_int(insights.get('impressions'))} | clicks={fmt_int(insights.get('clicks'))}")
         print()
     except Exception as exc:
         print(f"Campaign check failed: {exc}\n")
@@ -58,13 +67,13 @@ def main():
         ads = p._request(
             "GET",
             f"act_{p.ad_account_id.lstrip('act_')}/ads",
-            params={"fields": "id,name,adset_id,campaign_id,status,effective_status,preview_shareable_link,insights{spend,impressions,clicks,reach}", "limit": 100},
+            params={"fields": "id,name,adset_id,campaign_id,status,effective_status,preview_shareable_link,insights.date_preset(maximum){spend,impressions,clicks,reach}", "limit": 100},
         )
         active_ads = [a for a in ads.get("data", []) if a.get("effective_status") == "ACTIVE"]
         print(f"Ads: {len(ads.get('data', []))} total, {len(active_ads)} active\n")
         for a in ads.get("data", []):
             insights = (a.get("insights") or {}).get("data", [{}])[0]
-            print(f"  - {a.get('name')} | {a.get('effective_status')} | spend={fmt_cents(insights.get('spend'))} | impressions={insights.get('impressions', 0)} | clicks={insights.get('clicks', 0)}")
+            print(f"  - {a.get('name')} | {a.get('effective_status')} | spend={fmt_eur(insights.get('spend'))} | impressions={fmt_int(insights.get('impressions'))} | clicks={fmt_int(insights.get('clicks'))}")
         print()
     except Exception as exc:
         print(f"Ads check failed: {exc}\n")
