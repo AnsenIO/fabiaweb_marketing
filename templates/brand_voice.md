@@ -19,6 +19,10 @@
 4. Non-technical founders come first; explain acronyms.
 5. Every post needs a clear CTA or conversation hook.
 
+## Meta ad variants
+
+Generate 4 variants per brief, covering: core message, founder transformation, traction/time-to-market, and risk reversal/no-code. Each variant needs a headline, primary text, and a Meta-approved CTA button.
+
 ## Approved CTAs
 
 - "Start building →"

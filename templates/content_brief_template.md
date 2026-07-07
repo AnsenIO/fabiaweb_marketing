@@ -19,4 +19,4 @@
 - Email subject:
 - Tweet thread (3–5 tweets):
 - Discord announcement:
-- Meta ad headline + body:
+- Meta ad variants (4x: headline + primary text + CTA button):

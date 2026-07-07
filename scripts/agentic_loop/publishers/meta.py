@@ -148,34 +148,27 @@ class MetaPublisher(Publisher):
         }
         result = self._request("POST", path, json_data=payload)
         return result["id"]
-
     def create_adset(
         self,
         campaign_id: str,
         name: str,
         daily_budget_eur: float,
         custom_audience_id: str | None = None,
+        targeting: dict | None = None,
         optimization_goal: str = "LINK_CLICKS",
-        billing_event: str = "IMPRESSIONS",
     ) -> str:
-        path = f"act_{self.ad_account_id.lstrip('act_')}/adsets"
-        targeting = {
-            "geo_locations": {"countries": ["FR", "DE", "GB", "ES", "IT", "NL"]},
-            "age_min": 25,
-            "age_max": 55,
-            "targeting_automation": {"advantage_audience": 0},
-        }
-        if custom_audience_id:
-            targeting["custom_audiences"] = [{"id": custom_audience_id}]
+        if not self.ad_account_id:
+            raise RuntimeError("META_AD_ACCOUNT_ID is required")
 
+        path = f"act_{self.ad_account_id.lstrip('act_')}/adsets"
         payload = {
             "name": name,
             "campaign_id": campaign_id,
-            "daily_budget": int(daily_budget_eur * 100),  # cents
-            "billing_event": billing_event,
+            "daily_budget": int(daily_budget_eur * 100),
+            "billing_event": "IMPRESSIONS",
             "optimization_goal": optimization_goal,
             "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
-            "targeting": json.dumps(targeting),
+            "targeting": json.dumps(targeting or {}),
             "status": self.status,
         }
         if self.pixel_id:
@@ -242,7 +235,11 @@ class MetaPublisher(Publisher):
         result = self._request("POST", path, json_data=payload)
         return result["id"]
 
-    def publish(self, content: str, metadata: dict) -> dict:
+    def publish(self, content, metadata: dict) -> dict:
+        if isinstance(content, list):
+            # Content agent now generates multiple Meta variants; publish the first one.
+            content = json.dumps(content[0]) if content else "{}"
+
         if not self.ad_account_id or not self.access_token:
             return {"status": "skipped", "reason": "missing Meta ad account or access token"}
 

@@ -19,6 +19,9 @@ def main():
         "--run", action="store_true", help="Actually publish (default is dry-run)"
     )
     parser.add_argument(
+        "--dry-run", action="store_true", help="Generate content without publishing (default)"
+    )
+    parser.add_argument(
         "--validate", action="store_true", help="Validate Meta API credentials without publishing"
     )
     parser.add_argument(
@@ -55,7 +58,7 @@ def main():
             print(f"❌ Validation failed: {exc}")
         return
 
-    dry_run = not args.run
+    dry_run = args.dry_run or not args.run
     if dry_run:
         print("🔶 DRY-RUN mode. No content will be published.")
     else:

@@ -43,9 +43,22 @@ channels:
     dsa:
       beneficiary: "FABIABox"
       payor: "IABAI"
-    # Creative asset (must be publicly accessible)
+    # Creative assets (must be publicly accessible for reference; local path used for upload)
     image_url: "https://raw.githubusercontent.com/AnsenIO/fabiaweb_marketing/main/assets/images/fabia_ad_1.png"
     image_path: "assets/images/fabia_ad_1.png"
+    image_paths:
+      - "assets/images/fabia_ad_v1.png"
+      - "assets/images/fabia_ad_v2.png"
+      - "assets/images/fabia_ad_v3.png"
+      - "assets/images/fabia_ad_v1.png"
+    ab_test:
+      adsets:
+        - name: "EU Founders"
+          countries: ["FR", "DE", "GB", "ES", "IT", "NL"]
+          daily_budget_eur: 10
+        - name: "FR Founders"
+          countries: ["FR"]
+          daily_budget_eur: 10
     campaigns:
       retargeting_website:
         name: "FABIABox — Website Retargeting"
