@@ -63,7 +63,7 @@ def main():
     workflow["200"]["inputs"]["image"] = args.image
     workflow["89"]["inputs"]["text"] = args.prompt
     workflow["72"]["inputs"]["text"] = args.negative
-    workflow["81"]["inputs"]["seed"] = args.seed
+    workflow["81"]["inputs"]["noise_seed"] = args.seed
 
     print(f"Queueing Wan 2.2 image-to-video (seed {args.seed})...")
     result = queue_prompt(workflow)
