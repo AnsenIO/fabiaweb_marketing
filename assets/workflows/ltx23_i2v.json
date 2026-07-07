@@ -1,0 +1,86 @@
+{
+  "1": {
+    "inputs": {"ckpt_name": "ltx-2.3-22b-dev-fp8.safetensors"},
+    "class_type": "CheckpointLoaderSimple"
+  },
+  "2": {
+    "inputs": {"model": ["1", 0], "lora_name": "ltx_2.3_22b_distilled_1.1_lora_dynamic_fro09_avg_rank_111_bf16.safetensors", "strength_model": 0.5},
+    "class_type": "LoraLoaderModelOnly"
+  },
+  "3": {
+    "inputs": {
+      "text": "Cinematic slow dolly around a premium dark gunmetal and copper mini PC workstation, the FABIABox, with a low-wide rectangular chassis made of solid CNC-milled anodized aluminum and bronze accents. The front has precision horizontal copper cooling slats glowing warm amber from internal heat pipes and components, not hollow. The right side of the front face has a small circular chrome F logo backlit with soft white light. A single lit beeswax birthday candle flickers gently on top. The device sits on a polished wooden desk, smaller than the three holographic displays behind it showing code dashboards and HUD rings. Luxury penthouse office at night, city skyline bokeh through windows. Photorealistic, 8K.",
+      "clip": ["1", 1]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "4": {
+    "inputs": {
+      "text": "plastic, toy-like, cheap, empty heater, hollow grille, oversized, huge, cartoon, 3D render, glossy plastic, rubber, lightweight, distorted logo, blurry text, extra ports, USB-A, HDMI, audio jacks, watermark, text errors, low resolution, blurry",
+      "clip": ["1", 1]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "5": {
+    "inputs": {"positive": ["3", 0], "negative": ["4", 0], "frame_rate": 24},
+    "class_type": "LTXVConditioning"
+  },
+  "6": {
+    "inputs": {"image": "fabiabox_birthday_ltx_input.jpg", "upload": "image"},
+    "class_type": "LoadImage"
+  },
+  "7": {
+    "inputs": {"image": ["6", 0], "img_compression": 18},
+    "class_type": "LTXVPreprocess"
+  },
+  "8": {
+    "inputs": {
+      "positive": ["5", 0],
+      "negative": ["5", 1],
+      "vae": ["1", 2],
+      "image": ["7", 0],
+      "width": 960,
+      "height": 544,
+      "length": 65,
+      "batch_size": 1,
+      "strength": 0.7
+    },
+    "class_type": "LTXVImgToVideo"
+  },
+  "9": {
+    "inputs": {"width": 960, "height": 544, "length": 65, "batch_size": 1},
+    "class_type": "EmptyLTXVLatentVideo"
+  },
+  "10": {
+    "inputs": {"noise_seed": 42, "control_after_generate": "fixed"},
+    "class_type": "RandomNoise"
+  },
+  "11": {
+    "inputs": {"sampler_name": "euler"},
+    "class_type": "KSamplerSelect"
+  },
+  "12": {
+    "inputs": {"steps": 15, "max_shift": 2.05, "base_shift": 0.95, "stretch": true, "terminal": 0.1, "latent": ["8", 2]},
+    "class_type": "LTXVScheduler"
+  },
+  "13": {
+    "inputs": {"model": ["2", 0], "positive": ["8", 0], "negative": ["8", 1], "cfg": 1.0},
+    "class_type": "CFGGuider"
+  },
+  "14": {
+    "inputs": {"noise": ["10", 0], "guider": ["13", 0], "sampler": ["11", 0], "sigmas": ["12", 0], "latent_image": ["8", 2]},
+    "class_type": "SamplerCustomAdvanced"
+  },
+  "15": {
+    "inputs": {"samples": ["14", 0], "vae": ["1", 2]},
+    "class_type": "VAEDecode"
+  },
+  "16": {
+    "inputs": {"images": ["15", 0], "fps": 24},
+    "class_type": "CreateVideo"
+  },
+  "17": {
+    "inputs": {"filename_prefix": "LTX23_i2v", "format": "mp4", "codec": "h264", "video": ["16", 0]},
+    "class_type": "SaveVideo"
+  }
+}

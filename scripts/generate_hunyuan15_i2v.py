@@ -1,0 +1,130 @@
+#!/usr/bin/env python3
+"""Generate a FABIABox image-to-video clip using HunyuanVideo 1.5 720p i2v."""
+import argparse
+import json
+import os
+import random
+import sys
+import time
+import urllib.request
+import urllib.parse
+from PIL import Image
+
+COMFY_URL = "http://127.0.0.1:8188"
+WORKFLOW_PATH = os.path.join(os.path.dirname(__file__), "..", "assets", "workflows", "hunyuan_video_15_i2v.json")
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "comfy_outputs")
+INPUT_DIR = os.path.expanduser("~/projects/comfyui/ComfyUI/input")
+CROP_NAME = "fabiabox_birthday_hunyuan_input.jpg"
+
+PROMPT = (
+    "Cinematic slow dolly around a premium dark gunmetal and copper mini PC workstation, the FABIABox, "
+    "with a low-wide rectangular chassis made of solid CNC-milled anodized aluminum and bronze accents. "
+    "The front has precision horizontal copper cooling slats glowing warm amber from internal heat pipes and components, not hollow. "
+    "The right side of the front face has a small circular chrome F logo backlit with soft white light. "
+    "A single lit beeswax birthday candle flickers gently on top. The device sits on a polished wooden desk, "
+    "smaller than the three holographic displays behind it showing code dashboards and HUD rings. "
+    "Luxury penthouse office at night, city skyline bokeh through windows. Photorealistic, 8K."
+)
+NEGATIVE = (
+    "plastic, toy-like, cheap, empty heater, hollow grille, oversized, huge, cartoon, 3D render, "
+    "glossy plastic, rubber, lightweight, distorted logo, blurry text, extra ports, USB-A, HDMI, "
+    "audio jacks, watermark, text errors, low resolution, blurry"
+)
+
+
+def crop_to_16x9(input_path, out_path, width=1280, height=720):
+    img = Image.open(input_path).convert("RGB")
+    w, h = img.size
+    target_ratio = width / height
+    current_ratio = w / h
+    if current_ratio > target_ratio:
+        new_w = int(h * target_ratio)
+        left = (w - new_w) // 2
+        img = img.crop((left, 0, left + new_w, h))
+    else:
+        new_h = int(w / target_ratio)
+        top = (h - new_h) // 2
+        img = img.crop((0, top, w, top + new_h))
+    img = img.resize((width, height), Image.Resampling.LANCZOS)
+    img.save(out_path, "JPEG", quality=95)
+    print(f"Cropped input saved to {out_path}")
+
+
+def load_workflow():
+    with open(WORKFLOW_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def queue_prompt(workflow, client_id="hermes"):
+    data = json.dumps({"prompt": workflow, "client_id": client_id}).encode("utf-8")
+    req = urllib.request.Request(f"{COMFY_URL}/prompt", data=data, headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def get_history(prompt_id):
+    with urllib.request.urlopen(f"{COMFY_URL}/history/{prompt_id}", timeout=30) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def fetch_video(filename, subfolder="", folder_type="output"):
+    params = urllib.parse.urlencode({"filename": filename, "subfolder": subfolder, "type": folder_type})
+    with urllib.request.urlopen(f"{COMFY_URL}/view?{params}", timeout=120) as resp:
+        return resp.read()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--image", default="fabiabox_birthday_qwen_ref.jpg", help="Input image filename in ComfyUI/input")
+    parser.add_argument("--seed", type=int, default=random.randint(0, 2**32 - 1))
+    parser.add_argument("--prompt", default=PROMPT)
+    parser.add_argument("--negative", default=NEGATIVE)
+    args = parser.parse_args()
+
+    input_path = os.path.join(INPUT_DIR, args.image)
+    cropped_path = os.path.join(INPUT_DIR, CROP_NAME)
+    crop_to_16x9(input_path, cropped_path)
+
+    workflow = load_workflow()
+    workflow["80"]["inputs"]["image"] = CROP_NAME
+    workflow["44"]["inputs"]["text"] = args.prompt
+    workflow["93"]["inputs"]["text"] = args.negative
+    workflow["127"]["inputs"]["noise_seed"] = args.seed
+
+    print(f"Queueing HunyuanVideo 1.5 i2v (seed {args.seed})...")
+    result = queue_prompt(workflow)
+    prompt_id = result["prompt_id"]
+    print(f"Prompt ID: {prompt_id}")
+
+    print("Waiting for completion...")
+    while True:
+        time.sleep(2)
+        history = get_history(prompt_id)
+        if prompt_id not in history:
+            continue
+        item = history[prompt_id]
+        if item.get("status", {}).get("status_str") == "error":
+            print("Generation failed:", item["status"].get("messages", []), file=sys.stderr)
+            sys.exit(1)
+        outputs = item.get("outputs", {})
+        if outputs:
+            break
+
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    saved = []
+    for node_id, node_output in outputs.items():
+        for vid in node_output.get("images", []):
+            data = fetch_video(vid["filename"], vid.get("subfolder", ""), vid.get("type", "output"))
+            out_path = os.path.join(OUTPUT_DIR, vid["filename"])
+            with open(out_path, "wb") as f:
+                f.write(data)
+            saved.append(out_path)
+            print(f"Saved: {out_path}")
+
+    if not saved:
+        print("No videos returned.", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
