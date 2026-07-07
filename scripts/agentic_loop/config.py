@@ -50,6 +50,9 @@ def load_config():
     cfg["channels"]["meta"]["access_token"] = os.getenv(
         "META_ACCESS_TOKEN", cfg["channels"]["meta"].get("access_token", "")
     )
+    cfg["channels"]["meta"]["page_access_token"] = os.getenv(
+        "META_PAGE_ACCESS_TOKEN", cfg["channels"]["meta"].get("page_access_token", "")
+    )
     cfg["channels"]["meta"]["pixel_id"] = os.getenv(
         "META_PIXEL_ID", cfg["channels"]["meta"].get("pixel_id", "")
     )

@@ -96,6 +96,30 @@ class MetaPublisher(Publisher):
         except requests.RequestException as exc:
             raise RuntimeError(f"Meta image upload failed: {exc}") from exc
 
+    def _page_proof(self, token: str) -> str:
+        if not self.app_secret or not token:
+            return ""
+        return hmac.new(
+            self.app_secret.encode("utf-8"),
+            token.encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+
+    def update_page(self, info: dict) -> dict:
+        page_token = self.cfg.get("page_access_token", "")
+        if not page_token:
+            raise RuntimeError("META_PAGE_ACCESS_TOKEN is missing")
+        path = self.page_id
+        params = {
+            "access_token": page_token,
+            "appsecret_proof": self._page_proof(page_token),
+        }
+        resp = requests.post(f"{BASE_URL}/{path}", params=params, data=info, timeout=60)
+        data = resp.json()
+        if resp.status_code >= 400 or "error" in data:
+            raise RuntimeError(f"Meta page update error: {data.get('error', data)}")
+        return data
+
     def validate(self) -> dict:
         if not self.access_token:
             raise RuntimeError("META_ACCESS_TOKEN is missing")
