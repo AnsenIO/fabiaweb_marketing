@@ -57,4 +57,14 @@ def load_config():
         "META_PIXEL_ID", cfg["channels"]["meta"].get("pixel_id", "")
     )
 
+    cfg["channels"]["matomo"]["url"] = os.getenv(
+        "MATOMO_URL", cfg["channels"]["matomo"].get("url", "https://platform.iabai.net/")
+    )
+    cfg["channels"]["matomo"]["site_id"] = os.getenv(
+        "MATOMO_SITE_ID", cfg["channels"]["matomo"].get("site_id", "1")
+    )
+    cfg["channels"]["matomo"]["token_auth"] = os.getenv(
+        "MATOMO_TOKEN_AUTH", cfg["channels"]["matomo"].get("token_auth", "")
+    )
+
     return cfg

@@ -69,6 +69,12 @@ channels:
           - waitlist
           - content_engagers
 
+  matomo:
+    enabled: true
+    url: "https://platform.iabai.net/"
+    site_id: "1"
+    token_auth: ""
+
 llm:
   base_url: "http://127.0.0.1:11435/v1"
   api_key: "not-needed"
