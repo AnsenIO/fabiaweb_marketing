@@ -60,7 +60,7 @@ Campaign: FABIABox — Website Retargeting
  ├── AdSet: EU Founders
  │   ├── Ad V1: Founder with idea
  │   ├── Ad V2: Product shot
- │   ├── Ad V3: Sovereign angle
+ │   ├── Ad V3: Own the stack / ship fast
  │   ├── Ad V4: Timeline / speed
  │   ├── Ad V5: Product close-up
  │   └── Ad V6: Co-founder metaphor
