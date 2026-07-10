@@ -7,21 +7,58 @@
 
 ## 1. What we observed
 
-### 1.1 Audience (Matomo, last 7 days)
+### 1.1 Audience (last 7 days)
+
+#### Matomo on-site signals
 
 | Metric | Value | Note |
 |---|---|---|
-| Visits | 180 | Mostly generated in the last two days (tracking was only fully wired recently). |
-| Actions / visit | 2.7 | People browse a few pages before leaving. |
-| Bounce rate | 53% | Reasonable for cold traffic; room to improve. |
-| Avg. time on site | 5 m 40 s | High intent when someone stays. |
-| Top country | Germany (175 visits, 97%) | EU adset is driving almost all measurable traffic. |
-| Other countries | Bulgaria (4), UK (1) | US adset is not yet delivering meaningful site volume. |
-| Device split | Phablet 38%, Smartphone 36%, Desktop 18% | Audience is mobile-first. Creative and landing page must work on small screens. |
-| Referrer | Campaigns 67%, Direct 27%, Websites 4%, Search 2% | Traffic is paid/retargeting driven; organic/search are still tiny. |
-| Browser / app | Instagram, Facebook mobile | Confirms Meta placements are the current channel. |
+| Visits | 295 | Tracking has been live for ~2 days; most traffic is from paid Meta. |
+| Actions / visit | 2.3 | Low engagement depth; landing page is doing the heavy lifting. |
+| Bounce rate | 60% | Typical for cold traffic, but the homepage (`/`) is bouncing at a higher rate. |
+| Avg. time on site | 4 m 33 s | High intent when someone stays. |
+| Device split | Phablet 38%, Smartphone 36%, Desktop 18%, Tablet 5% | **Mobile-first audience** (74% mobile/phablet). |
+| Referrer | Campaigns 67%, Direct 27%, Websites 4%, Search 2% | Almost entirely paid Meta; organic/search are negligible. |
+| Browser / app | Instagram 47%, Facebook 14%, Chrome 20%, Mobile Safari 12% | In-app browsing dominates. |
 
-**Audience hypothesis:** the current reachable audience is English-speaking, mobile-first founders and early-stage operators in Germany (and the broader EU adset), reached via Instagram/Facebook retargeting. They respond to control, speed, and sovereignty more than to abstract “shipped companies” messaging.
+**Geo caveat:** Matomo currently records the **server IP `159.223.27.54`** for most visits because the production `.env` is missing `MATOMO_TOKEN_AUTH`. The Matomo country/region data below is therefore **not reliable** until the token is added and the apps are restarted.
+
+| Matomo geo (unreliable) | Value |
+|---|---|
+| Recorded country | Germany 97% (175/180) |
+| Recorded region | Baden-Württemberg, Germany |
+| Recorded city | Kirchzarten, Germany |
+
+#### Meta paid-audience breakdown (2026-07-04 → 2026-07-10)
+
+This is the **real** source of truth for geography and demographics while Matomo’s IP forwarding is broken.
+
+**By country:**
+
+| Country | Impressions | Clicks | CTR | CPC | Spend | Efficiency |
+|---|---|---:|---:|---:|---:|---|
+| **US** | 4,217 | 354 | **8.39%** | **€0.092** | €32.72 | Best CTR; highest spend and strong CPC. |
+| **UK** | 3,281 | 83 | 2.53% | €0.177 | €14.73 | High spend, low CTR, expensive CPC. |
+| **Spain** | 9,839 | 275 | 2.79% | €0.068 | €18.66 | Volume market, efficient CPC. |
+| **Italy** | 6,974 | 204 | 2.93% | €0.056 | €11.38 | Efficient CPC but lower CTR. |
+| **France** | 4,282 | 123 | 2.87% | €0.082 | €10.14 | Mid-tier. |
+| **Netherlands** | 1,082 | 40 | 3.70% | €0.125 | €5.00 | Small but decent CTR. |
+| **Germany** | 966 | 37 | 3.83% | €0.099 | €3.65 | Small sample; aligns with Matomo “Germany” signal. |
+
+**By age and gender:**
+
+| Segment | Impressions | Clicks | CTR | CPC | Spend | Note |
+|---|---|---:|---:|---:|---:|---|
+| **Male 25-34** | 11,170 | 436 | 3.90% | €0.081 | €35.46 | Largest volume, very efficient. |
+| **Male 35-44** | 6,495 | 273 | 4.20% | €0.088 | €24.11 | Strong volume + efficiency. |
+| **Male 45-54** | 3,943 | 206 | **5.22%** | **€0.067** | €13.85 | **Highest CTR and cheapest CPC.** |
+| Male 55-64 | 341 | 16 | 4.69% | €0.066 | €1.05 | Tiny but efficient. |
+| Female 25-34 | 2,809 | 31 | 1.10% | €0.277 | €8.59 | Weak CTR, expensive. |
+| Female 35-44 | 1,606 | 31 | 1.93% | €0.170 | €5.27 | Weak CTR, expensive. |
+| Female 45-54 | 1,359 | 18 | 1.32% | €0.187 | €3.36 | Weak CTR, expensive. |
+| Unknown gender | 2,895 | 103 | 3.56% | €0.040 | €4.15 | Efficient, but small/ambiguous. |
+
+**Audience hypothesis (updated):** the core buyer/lead is a **man aged 25–54**, skewing slightly older (35–54), reached via Instagram/Facebook in-app ads. Geography is split: **US is the highest-quality market** (best CTR), while **UK is the weakest** (expensive, low CTR). The EU adset contains a mix of efficient CPC markets (Italy, Spain) and expensive/low-CTR markets (UK). Creative must be mobile-first and work without sound (in-app scroll). The message that lands is **sovereignty, local ownership, and replacing the missing technical co-founder**, not abstract “ship faster” language.
 
 ### 1.2 Creative performance (Meta, lifetime since launch)
 
@@ -117,10 +154,14 @@ These are server-side events fired from `fabiaweb_shop`. No Meta Pixel conversio
 ## 4. How it is going so far (2026-07-10 status check)
 
 ### 4.1 Meta account
-- Account: ACTIVE, €41.33 lifetime spend.
+- Account: ACTIVE, **€76.78** lifetime spend (up from €41.33 earlier in the day).
 - Campaign: `FABIABox — Website Retargeting`, ACTIVE, `OUTCOME_TRAFFIC`.
-- 12 ads, 9 active + 2 new V3 in review.
-- Winning angle is validated: V5/V6 lead in both EU and US adsets.
+- 12 ads, **11 active** (the two rewritten V3 ads finished review and are now ACTIVE).
+- Winning angle is still **V5/V6 sovereignty** in both adsets.
+- **New V3 performance after rewrite:**
+  - EU V3: 183 impressions, 3 clicks, **1.64% CTR**, €0.047 CPC, €0.14 spend.
+  - US V3: 378 impressions, 30 clicks, **7.94% CTR**, €0.090 CPC, €2.69 spend.
+  - Interpretation: **US V3 is competitive** with V5/V6; **EU V3 is below the winners** but far better than the old 0% creative. It needs more impressions before a final verdict.
 
 ### 4.2 Websites / deployment
 - `/health` on both sites returns JSON with git commit and deployed-at timestamp.
@@ -132,7 +173,7 @@ These are server-side events fired from `fabiaweb_shop`. No Meta Pixel conversio
 ### 4.3 Matomo tracking quality
 - Matomo is receiving traffic and can segment by ad creative via `utm_content`.
 - **Still recording server IP `159.223.27.54` for live visits.** This means the production `.env` files on the server are missing `MATOMO_TOKEN_AUTH` (or the apps have not been restarted since it was added). The manual curl test proved that when a valid token is sent via POST, Matomo records the real client IP.
-- Germany is dominating traffic; real client location data is reliable once the token issue is fixed.
+- **Matomo geo data is therefore unreliable.** Germany appears to dominate because the server IP geolocates there, not because Germany is the only market. Use Meta breakdowns for geography until the token issue is fixed.
 
 ### 4.4 Conversions
 - Server-side Matomo events are firing: 24 initiate-checkout, 7 lead events in the last 7 days.
@@ -157,7 +198,23 @@ These are server-side events fired from `fabiaweb_shop`. No Meta Pixel conversio
 
 ---
 
-## 6. Creative recommendation summary
+## 6. Audience targeting recommendations
+
+Based on the Meta breakdowns, the account is currently buying **too much low-quality female and UK inventory** relative to the high-performing male/US segments.
+
+### Immediate levers
+
+1. **Prioritize men 25–54.** Every female age bracket is 2–4× more expensive per click and converts at half the CTR or worse.
+   - Create a **Men 25–54** adset with the same V5/V6/V3 creatives and allocate the majority of the EU + US budget there.
+   - Keep a small **Women 25–54 test adset** only if the budget allows; otherwise exclude it until lead data proves otherwise.
+2. **Separate US from EU.** US CTR (~8%) is roughly 2–3× the EU average. It deserves its own budget and bid strategy.
+3. **Split the EU adset by performance tier.**
+   - **Tier 1 (keep):** US, Germany, Netherlands, Spain, Italy.
+   - **Tier 2 (reduce/pause):** UK and France are underperforming on CTR; France is acceptable on CPC, UK is expensive.
+4. **Lean into the 45–54 male segment.** It has the highest CTR (5.22%) and cheapest CPC (€0.067). This is likely the experienced founder/decision-maker cohort.
+5. **Mobile-first creative.** 74% of visits are mobile/phablet. Ensure the first 3 seconds of any new creative communicate “own your AI” without requiring sound.
+
+## 7. Creative recommendation summary
 
 The account has found a working message:
 
