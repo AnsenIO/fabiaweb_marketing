@@ -12,8 +12,8 @@
 | Ad account | IABAI ad account, currency **EUR** |
 | Active campaign | `FABIABox — Website Retargeting` |
 | Objective | `OUTCOME_TRAFFIC` |
-| AdSets | `US Founders` (daily €25) and `EU Founders` (daily €20) |
-| Active ads | V1–V6 + **V3.1** in each adset |
+| AdSets | `US Founders` (daily €25), `EU Founders` (daily €20), `EU Founders (intent-qualified)` (daily €25) |
+| Active ads | V1–V6 + **V3.1** in US/EU adsets; V3.1 + V4 + V5 in EU intent adset |
 | Winning image hash | `6fdc8f0b5df6eea893dbcfac00a79b07` (used by V5 and V3.1) |
 | Status | controlled by `META_AD_STATUS` env var (`PAUSED` or `ACTIVE`) |
 
@@ -54,35 +54,40 @@ The script updates `config/.env` with `META_ACCESS_TOKEN` and `META_PAGE_ACCESS_
 
 ## Campaign structure
 
-Two geo-split adsets to learn market-specific response:
+Two geo-split adsets plus one intent-qualified EU adset to learn market-specific and audience-qualified response:
 
 ```
 Campaign: FABIABox — Website Retargeting
  │
- ├── AdSet: US Founders (€25/day)
- │   ├── Ad V1: Human co-founder
- │   ├── Ad V2: Functional co-founder
- │   ├── Ad V3: Own the stack / ship fast (paused)
- │   ├── Ad V3.1: AI co-founder + sovereign stack
- │   ├── Ad V4: Hologram
- │   ├── Ad V5: SaaS is dead / sovereign AI
- │   └── Ad V6: Why rent AI / foundry
+ ├─── AdSet: US Founders (€25/day)
+ │   ├─── Ad V1: Human co-founder
+ │   ├─── Ad V2: Functional co-founder
+ │   ├─── Ad V3: Own the stack / ship fast (paused)
+ │   ├─── Ad V3.1: AI co-founder + sovereign stack
+ │   ├─── Ad V4: Hologram
+ │   ├─── Ad V5: SaaS is dead / sovereign AI
+ │   └─── Ad V6: Why rent AI / foundry
  │
- └── AdSet: EU Founders (€20/day)
-     ├── Ad V1: Human co-founder
-     ├── Ad V2: Functional co-founder
-     ├── Ad V3: Own the stack / ship fast (paused)
-     ├── Ad V3.1: AI co-founder + sovereign stack
-     ├── Ad V4: Hologram
-     ├── Ad V5: SaaS is dead / sovereign AI
-     └── Ad V6: Why rent AI / foundry
+ ├─── AdSet: EU Founders (€20/day) — broad geo
+ │   ├─── Ad V1: Human co-founder (paused)
+ │   ├─── Ad V2: Functional co-founder
+ │   ├─── Ad V3: Own the stack / ship fast (paused)
+ │   ├─── Ad V3.1: AI co-founder + sovereign stack
+ │   ├─── Ad V4: Hologram
+ │   ├─── Ad V5: SaaS is dead / sovereign AI
+ │   └─── Ad V6: Why rent AI / foundry
+ │
+ └─── AdSet: EU Founders (€25/day) — intent-qualified (same interests as US)
+     ├─── Ad V3.1: AI co-founder + sovereign stack
+     ├─── Ad V4: Hologram
+     └─── Ad V5: SaaS is dead / sovereign AI
 ```
 
 Core messaging:
 
 > **YOUR AI CO-FOUNDER. SHIP YOUR COMPANY.**
 
-Target: non-technical entrepreneurs, pre-seed/seed stage, US + English-speaking EU.
+Target: non-technical entrepreneurs, pre-seed/seed stage, US + English-speaking EU. The EU intent adset adds the US interest stack (small business, AI, startups, SaaS, entrepreneurship) to qualify cold traffic.
 
 ---
 
@@ -155,6 +160,7 @@ Page renames via the API can be rejected if the app lacks the right capability; 
 - Pause any creative with **< 1% CTR** after ~3,000 impressions.
 - Scale budget on any creative with **> 3% CTR** and cost-per-click under €0.15.
 - Keep one broad geo adset per market while learning budget is small.
+- **Clone the winning audience into new regions:** the US adset outperformed the broad EU adset because it stacked interests on top of geo. The EU intent adset (`120249476780370462`) replicates the US targeting and runs only the top EU creatives + V3.1.
 - Refresh ad copy/images every 4–6 weeks to avoid fatigue.
 - **Learning to date:** V5 ("SaaS is dead") and V6 ("Why rent AI") are the volume winners; V2 ("Your AI co-founder") has the highest CTR but tiny reach. V3 worked in the US (7.94% CTR) but failed in the EU (1.64% CTR), so it was evolved into **V3.1** — same winning V5 image, a "co-founder" headline, and a primary text that pairs concrete deliverables (MVP, brand, go-to-market) with sovereignty (on your desk, your data, your control).
 
@@ -174,5 +180,5 @@ Page renames via the API can be rejected if the app lacks the right capability; 
 
 ---
 
-*Last updated: 2026-07-07*  
+*Last updated: 2026-07-10*  
 *Author: Andrea (IABAI)*
