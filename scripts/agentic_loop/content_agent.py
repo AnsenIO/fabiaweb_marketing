@@ -153,8 +153,8 @@ Return ONLY JSON with keys: headline, primary_text, cta_button."""
 
     def _variant_speed(self, brief: ContentBrief) -> dict:
         return {
-            "headline": "OWN YOUR AI. SHIP YOUR COMPANY.",
-            "primary_text": f"You have the idea. {brief.product} turns it into a launched product and business \u2014 without a dev team, without cloud lock-in, and without giving away your data. Approve the plan and ship from the box on your desk.",
+            "headline": "YOUR AI CO-FOUNDER. SHIP YOUR COMPANY.",
+            "primary_text": f"Stop waiting for a technical co-founder. Share your idea and documents, approve the plan, and {brief.product} builds your MVP, brand, and go-to-market stack \u2014 on your desk, with your data, under your control.",
             "cta_button": "Learn More",
         }
 

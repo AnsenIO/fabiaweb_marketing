@@ -62,22 +62,28 @@ This is the **real** source of truth for geography and demographics while Matomo
 
 ### 1.2 Creative performance (Meta, lifetime since launch)
 
-| Ad ID | Variant | Status | Impressions | Clicks | CTR | CPC | Why it works / fails |
-|---|---:|---|---:|---:|---:|---:|---|
-| `120249350907820462` | EU V5 — “SAAS IS DEAD. SOVEREIGN AI IS BORN.” | ACTIVE | 11,886 | 433 | **3.64%** | **€0.060** | Strongest. Contrarian, local/on-desk ownership, clear enemy (SaaS/cloud). |
-| `120249350237230462` | EU V4 — “Build a company without coding” | ACTIVE | 419 | 13 | 3.10% | €0.052 | Clear outcome + no-code + “you stay in control.” |
-| `120249350230370462` | EU V2 — “YOUR AI CO-FOUNDER” | ACTIVE | 650 | 15 | 2.31% | €0.075 | Replaces the missing technical co-founder. |
-| `120249350911340462` | EU V6 — “WHY RENT AI WHEN YOU CAN OWN THE FOUNDRY?” | ACTIVE | 9,901 | 192 | 1.94% | €0.145 | Same sovereignty theme as V5; slightly weaker CPC. |
-| `120249350226320462` | EU V1 — Human co-founder | PAUSED | 1,875 | 17 | 0.91% | €0.234 | Too soft/generic; paused earlier. |
-| `120249350233090462` | EU V3 — “IDEAS DON'T PAY. SHIPPED COMPANIES DO.” | **updated** | 149 | 0 | 0.00% | — | Failed. Abstract headline, no sovereignty/control hook. |
-| `120249387437490462` | US V5 — “SAAS IS DEAD...” | ACTIVE | 389 | 36 | 9.25% | €0.089 | Tiny sample, but the same sovereignty copy wins. |
-| `120249387441910462` | US V6 — “WHY RENT AI...” | ACTIVE | 1,714 | 146 | 8.52% | €0.090 | Same pattern as EU/US V5/V6. |
-| `120249387428120462` | US V2 — “YOUR AI CO-FOUNDER” | ACTIVE | 35 | 4 | 11.43% | €0.038 | Very small sample. |
-| `120249387433590462` | US V4 — “Build a company without coding” | ACTIVE | 4 | 1 | 25.00% | €0.020 | Tiny sample. |
-| `120249387431010462` | US V3 — “IDEAS DON'T PAY...” | **updated** | n/a | 0 | — | — | No Meta data, but Matomo shows 8 landing visits from the old creative. |
-| `120249387424560462` | US V1 — Human co-founder | ACTIVE | 15 | 1 | 6.67% | €0.050 | Tiny sample. |
+| Ad ID | Adset | Variant | Status | Impressions | Clicks | CTR | CPC | Why it works / fails |
+|---|---|---:|---|---:|---:|---:|---:|---|
+| `120249350907820462` | EU | V5 — “SAAS IS DEAD. SOVEREIGN AI IS BORN.” | ACTIVE | 13,409 | 521 | **3.89%** | **€0.056** | **EU volume winner.** Contrarian sovereignty + local ownership. |
+| `120249350911340462` | EU | V6 — “WHY RENT AI WHEN YOU CAN OWN THE FOUNDRY?” | ACTIVE | 10,291 | 218 | 2.12% | €0.133 | Same theme as V5 but weaker CPC. |
+| `120249350237230462` | EU | V4 — “Build a company without coding” | ACTIVE | 419 | 13 | 3.10% | €0.052 | Clear outcome; small sample. |
+| `120249350230370462` | EU | V2 — “YOUR AI CO-FOUNDER” | ACTIVE | 651 | 15 | 2.30% | €0.075 | Concrete co-founder promise. |
+| `120249350226320462` | EU | V1 — Human co-founder | PAUSED | 1,875 | 17 | 0.91% | €0.234 | Too soft/generic; paused. |
+| `120249350233090462` | EU | V3 — “OWN YOUR AI. SHIP YOUR COMPANY.” | **PAUSED** | 183 | 3 | 1.64% | €0.047 | Failed in EU; abstract without co-founder hook. |
+| `120249469497610462` | EU | **V3.1** — AI co-founder + sovereign stack | ACTIVE | — | — | — | — | Just launched; combines V5/V6 sovereignty + V2 deliverables. |
+| `120249387437490462` | US | V5 — “SAAS IS DEAD...” | ACTIVE | 968 | 93 | **9.61%** | €0.092 | Strong US performer. |
+| `120249387428120462` | US | V2 — “YOUR AI CO-FOUNDER” | ACTIVE | 70 | 12 | **17.14%** | €0.033 | Highest observed CTR; tiny reach. |
+| `120249387441910462` | US | V6 — “WHY RENT AI...” | ACTIVE | 3,047 | 231 | 7.58% | €0.101 | Strong volume + CTR. |
+| `120249387431010462` | US | V3 — “OWN YOUR AI...” | **PAUSED** | 378 | 30 | 7.94% | €0.090 | Worked in US but shared EU creative pulled it down. |
+| `120249469494710462` | US | **V3.1** — AI co-founder + sovereign stack | ACTIVE | — | — | — | — | Just launched. |
+| `120249387433590462` | US | V4 — Hologram | ACTIVE | 8 | 1 | 12.50% | €0.030 | Tiny sample. |
+| `120249387424560462` | US | V1 — Human co-founder | ACTIVE | 22 | 2 | 9.09% | €0.050 | Tiny sample. |
 
-**Key creative insight:** the winning proposition is **sovereignty + local ownership** (“your desk, not a cloud provider”, “own the foundry”). The losing proposition is **process/velocity** framed as “stop writing specs / shipped companies” without the sovereignty hook.
+**Key creative insights:**
+1. **Sovereignty + local ownership** (V5/V6) is the clear volume winner in both markets.
+2. **AI co-founder / concrete deliverables** (V2) has the highest CTR when it gets delivery, especially in the US.
+3. **The original V3 failed in the EU** because the headline was abstract and the body did not spell out the concrete outcome (MVP, brand, go-to-market) or the emotional pain (waiting for a technical co-founder).
+4. **V3.1 attempts to combine the best of both:** V5/V6 sovereignty hook + V2 co-founder framing + V4 concrete deliverables.
 
 ### 1.3 On-site behavior by creative (Matomo landing pages, last 7 days)
 
@@ -140,28 +146,34 @@ These are server-side events fired from `fabiaweb_shop`. No Meta Pixel conversio
 - Updated `docs/agents/Meta.md` to reflect the new Ad V3 angle.
 - Updated `scripts/agentic_loop/content_agent.py` `_variant_speed()` so future generated variants use the winning sovereignty + ship-fast copy.
 
-### 3.3 Live ad update (2026-07-10)
-- Created new Ad V3 creatives for both EU and US adsets.
-- New copy:
-  - **Headline:** `OWN YOUR AI. SHIP YOUR COMPANY.`
-  - **Primary text:** *“You have the idea. Fabia turns it into a launched product and business — without a dev team, without cloud lock-in, and without giving away your data. Approve the plan and ship from the box on your desk.”*
-- Reused the winning V5 image hash (`6fdc8f0b5df6eea893dbcfac00a79b07`).
-- Updated ad names to `... Ad V3 (Own the stack — ship fast)` and set status to `ACTIVE`.
-- Ad IDs: `120249350233090462` (EU), `120249387431010462` (US). Currently showing `IN_PROCESS` while Meta reviews.
+### 3.3 Live ad update (2026-07-10) — Ad V3.1
+
+- Paused the original Ad V3 in both adsets (EU `120249350233090462`, US `120249387431010462`).
+- Created new Ad V3.1 creatives and ads in both EU and US adsets:
+  - **New EU ad:** `120249469497610462`
+  - **New US ad:** `120249469494710462`
+  - **New creative:** `2085268062410129`
+- New V3.1 copy (synthesized from the account winners):
+  - **Headline:** `YOUR AI CO-FOUNDER. SHIP YOUR COMPANY.`
+  - **Primary text:** *“Stop waiting for a technical co-founder. Share your idea and documents, approve the plan, and Fabia builds your MVP, brand, and go-to-market stack — on your desk, with your data, under your control.”*
+- Reused the winning V5/V6 image hash (`6fdc8f0b5df6eea893dbcfac00a79b07`).
+- Rationale: V3 worked in the US but failed in the EU because the “own your AI / ship from the box” angle was too abstract without the concrete co-founder promise. V3.1 keeps the sovereignty hook from V5/V6, borrows the clear deliverables from V2, and leads with the “AI co-founder” framing that had the highest observed CTR (V2, 17.1% US).
 
 ---
 
 ## 4. How it is going so far (2026-07-10 status check)
 
 ### 4.1 Meta account
-- Account: ACTIVE, **€76.78** lifetime spend (up from €41.33 earlier in the day).
+
+- Account: ACTIVE, **€76.78** lifetime spend.
 - Campaign: `FABIABox — Website Retargeting`, ACTIVE, `OUTCOME_TRAFFIC`.
-- 12 ads, **11 active** (the two rewritten V3 ads finished review and are now ACTIVE).
-- Winning angle is still **V5/V6 sovereignty** in both adsets.
-- **New V3 performance after rewrite:**
+- **13 ads total:** 11 active pre-V3.1 creatives + 2 new V3.1 ads; original V3 ads are now **PAUSED**.
+- Winning angle remains **V5/V6 sovereignty** in both adsets, with **V2 "AI co-founder"** showing the highest CTR but very low delivery.
+- **Original V3 performance before pause:**
   - EU V3: 183 impressions, 3 clicks, **1.64% CTR**, €0.047 CPC, €0.14 spend.
   - US V3: 378 impressions, 30 clicks, **7.94% CTR**, €0.090 CPC, €2.69 spend.
-  - Interpretation: **US V3 is competitive** with V5/V6; **EU V3 is below the winners** but far better than the old 0% creative. It needs more impressions before a final verdict.
+  - Interpretation: V3 worked in the US but failed in the EU, so it was replaced by V3.1.
+- **Ad V3.1 is now live** in both adsets (EU `120249469497610462`, US `120249469494710462`). It combines the proven V5/V6 sovereignty hook, the V2 co-founder framing, and concrete deliverables. Give it ~1,000 impressions before judging CTR/CPC.
 
 ### 4.2 Websites / deployment
 - `/health` on both sites returns JSON with git commit and deployed-at timestamp.

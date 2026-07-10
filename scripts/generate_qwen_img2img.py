@@ -19,9 +19,14 @@ PROMPT = (
     "the FABIABox, with dense vertical heatsink fins glowing warm amber from within, sitting on a polished "
     "wooden desk inside a luxurious high-tech penthouse office at night. Floor-to-ceiling windows show a "
     "softly blurred city skyline bokeh. Holographic blue data visualizations float in the background. "
-    "Navy and electric orange confetti falling gently. A single lit birthday candle sits on top of the "
-    "heatsink, warm flame reflecting on metal. Dramatic low-key cinematic lighting, photorealistic, 8K, "
-    "shallow depth of field. No text, no logos, no typography, no words."
+    "A single lit birthday candle sits on top of the heatsink, warm flame reflecting on metal. "
+    "Dramatic low-key cinematic lighting, photorealistic, 8K, shallow depth of field. No text, no logos, no typography, no words."
+)
+
+NEGATIVE = (
+    "plastic, toy-like, empty heater, hollow grille, oversized, huge, cartoon, 3D render, cheap, "
+    "glossy plastic, rubber, lightweight, distorted logo, blurry text, extra ports, USB-A, HDMI, "
+    "audio jacks, watermark, text errors, low resolution, blurry"
 )
 
 
@@ -55,11 +60,13 @@ def main():
     parser.add_argument("--seed", type=int, default=random.randint(0, 2**32 - 1))
     parser.add_argument("--denoise", type=float, default=0.65)
     parser.add_argument("--prompt", default=PROMPT)
+    parser.add_argument("--negative", default=NEGATIVE)
     args = parser.parse_args()
 
     workflow = load_workflow()
     workflow["300"]["inputs"]["image"] = args.image
     workflow["238:227"]["inputs"]["text"] = args.prompt
+    workflow["238:228"]["inputs"]["text"] = args.negative
     workflow["238:230"]["inputs"]["seed"] = args.seed
     workflow["238:230"]["inputs"]["denoise"] = args.denoise
 
