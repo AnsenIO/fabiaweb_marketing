@@ -1,9 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:/home/ansen/projects/fabiaweb_marketing/assets/manim/fabiabox_intro/media/videos/script/720p30/partial_movie_files/FABIABoxIntro/2336003190_4237441472_223132457.mp4'
-file 'file:/home/ansen/projects/fabiaweb_marketing/assets/manim/fabiabox_intro/media/videos/script/720p30/partial_movie_files/FABIABoxIntro/4116865876_3394500337_2307809570.mp4'
-file 'file:/home/ansen/projects/fabiaweb_marketing/assets/manim/fabiabox_intro/media/videos/script/720p30/partial_movie_files/FABIABoxIntro/4116865876_2463392598_3289277505.mp4'
-file 'file:/home/ansen/projects/fabiaweb_marketing/assets/manim/fabiabox_intro/media/videos/script/720p30/partial_movie_files/FABIABoxIntro/4116865876_1433877407_2965280564.mp4'
-file 'file:/home/ansen/projects/fabiaweb_marketing/assets/manim/fabiabox_intro/media/videos/script/720p30/partial_movie_files/FABIABoxIntro/4116865876_246736339_3900187586.mp4'
-file 'file:/home/ansen/projects/fabiaweb_marketing/assets/manim/fabiabox_intro/media/videos/script/720p30/partial_movie_files/FABIABoxIntro/4116865876_3394500337_2723797665.mp4'
-file 'file:/home/ansen/projects/fabiaweb_marketing/assets/manim/fabiabox_intro/media/videos/script/720p30/partial_movie_files/FABIABoxIntro/4116865876_3147224455_472900297.mp4'
-file 'file:/home/ansen/projects/fabiaweb_marketing/assets/manim/fabiabox_intro/media/videos/script/720p30/partial_movie_files/FABIABoxIntro/4116865876_3484913905_759290782.mp4'

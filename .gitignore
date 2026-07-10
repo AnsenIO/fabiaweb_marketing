@@ -26,3 +26,9 @@ data/*.db
 .DS_Store
 Thumbs.db
 assets/comfy_outputs/
+
+# Generated marketing assets
+assets/manim/
+assets/social/
+assets/videos/
+
