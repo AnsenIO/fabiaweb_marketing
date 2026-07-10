@@ -197,7 +197,7 @@ class MetaPublisher(Publisher):
         }
         if self.pixel_id:
             payload["promoted_object"] = json.dumps(
-                {"pixel_id": self.pixel_id, "custom_event_type": "VIEW_CONTENT"}
+                {"pixel_id": self.pixel_id, "custom_event_type": "CONTENT_VIEW"}
             )
 
         if self.dsa.get("beneficiary"):

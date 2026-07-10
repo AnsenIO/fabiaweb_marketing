@@ -12,8 +12,8 @@
 | Ad account | IABAI ad account, currency **EUR** |
 | Active campaign | `FABIABox — Website Retargeting` |
 | Objective | `OUTCOME_TRAFFIC` |
-| AdSets | `US Founders` (daily €25), `EU Founders` (daily €20), `EU Founders (intent-qualified)` (daily €25) |
-| Active ads | V1–V6 + **V3.1** in US/EU adsets; V3.1 + V4 + V5 in EU intent adset |
+| AdSets | `US Founders` (€25), `EU Founders` (€20), `EU Founders (intent-qualified)` (€25), `EU VC & Accelerators` (€25), `US VC & Accelerators` (€25) |
+| Active ads | V1–V6 + V3.1 in US/EU adsets; V3.1 + V4 + V5 in EU intent adset; V3.1 + V4 + V5 in EU/US VC adsets |
 | Winning image hash | `6fdc8f0b5df6eea893dbcfac00a79b07` (used by V5 and V3.1) |
 | Status | controlled by `META_AD_STATUS` env var (`PAUSED` or `ACTIVE`) |
 
@@ -81,13 +81,23 @@ Campaign: FABIABox — Website Retargeting
      ├─── Ad V3.1: AI co-founder + sovereign stack
      ├─── Ad V4: Hologram
      └─── Ad V5: SaaS is dead / sovereign AI
+
+ ├─── AdSet: EU VC & Accelerators (€25/day) — venture capital / seed accelerator / angel investor
+ │   ├─── Ad V3.1: AI co-founder + sovereign stack
+ │   ├─── Ad V4: Hologram
+ │   └─── Ad V5: SaaS is dead / sovereign AI
+ │
+ └─── AdSet: US VC & Accelerators (€25/day) — venture capital / seed accelerator / angel investor
+     ├─── Ad V3.1: AI co-founder + sovereign stack
+     ├─── Ad V4: Hologram
+     └─── Ad V5: SaaS is dead / sovereign AI
 ```
 
 Core messaging:
 
 > **YOUR AI CO-FOUNDER. SHIP YOUR COMPANY.**
 
-Target: non-technical entrepreneurs, pre-seed/seed stage, US + English-speaking EU. The EU intent adset adds the US interest stack (small business, AI, startups, SaaS, entrepreneurship) to qualify cold traffic.
+Target: non-technical entrepreneurs, pre-seed/seed stage, US + English-speaking EU. The EU intent adset adds the US interest stack (small business, AI, startups, SaaS, entrepreneurship) to qualify cold traffic. The VC & Accelerators adsets test whether investors and accelerator networks respond to the sovereignty / local-AI message.
 
 ---
 

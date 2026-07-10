@@ -198,6 +198,24 @@ These are server-side events fired from `fabiaweb_shop`. No Meta Pixel conversio
   - `6003177222849` — **Machine learning** (~35.1–41.3M)
   - These are good candidates for a second EU test adset once the current intent adset reaches ~1,000 impressions per creative, because they signal higher commercial intent than the broad “entrepreneurship” interest.
 
+### 3.5 VC & Accelerators adsets (2026-07-10)
+
+- **Goal:** test whether the sovereignty/local-AI message lands with investors, accelerators, and angel networks in Europe and the US.
+- **Targeting:** age 25–65, all genders, interests stacked:
+  - Venture capital (`6003284619527`)
+  - Seed accelerator (`6002967067555`)
+  - Angel investor (`6003318751818`)
+- **EU adset:** `120249477729880462` — `FABIABox — Website Prospecting — EU VC & Accelerators` (€25/day)
+- **US adset:** `120249477730730462` — `FABIABox — Website Prospecting — US VC & Accelerators` (€25/day)
+- **Ads attached (V3.1 + V4 + V5):**
+  - EU V3.1: `120249477731460462`
+  - EU V4: `120249477732000462`
+  - EU V5: `120249477732710462`
+  - US V3.1: `120249477733120462`
+  - US V4: `120249477733540462`
+  - US V5: `120249477734720462`
+- **Measurement:** both adsets are ACTIVE and will be tracked via the daily `check_meta_health.py` cron. Compare CTR/CPC, cost per landing-page view, and on-site Matomo sessions by `utm_content` (= ad ID) after ~1,000 impressions per creative.
+
 ---
 
 ## 4. How it is going so far (2026-07-10 status check)
