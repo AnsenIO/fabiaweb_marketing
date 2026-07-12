@@ -83,7 +83,7 @@
 | Tier | Primary image | Treatment |
 |------|---------------|-----------|
 | **Entry** | `assets/hardware/fabiabox_entry_render_60.png` | Custom-rendered low-wide FABIABox with glowing F emblem, teal/violet accents, black background. |
-| **Entry (office)** | `assets/hardware/Flux2-dev-t2i-office_00001_.png` | Same FABIABox device on a wooden desk in a bright office, with chair, coffee cup, notebook. |
+| **Entry (office, small)** | `assets/hardware/Flux2-dev-t2i-office-small_00001_.png` | Cup-sized FABIABox on a wooden desk, chair/coffee/notebook for scale. |
 | **Pro** | `assets/hardware/pro_nvidia_dgx_spark_box.webp` | Public DGX Spark product shot. |
 | **Enterprise** | `assets/hardware/enterprise_nvidia_dgx_station_gb300_scan.webp` | Public DGX Station tower shot. |
 
