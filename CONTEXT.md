@@ -55,15 +55,25 @@
 - **Lifetime premium support**
 - **Lifetime SquadShelf ecosystem access** at **Founders** level (premium tier; Platinum may exist later)
 
-## Offer-page visual treatment
+## Hardware tier images (found)
 
-- Default: each tier shows a polished product image of the FABIABox hardware + a Fabia OS UI/hero overlay.
-- Open: use real product photography vs. brand-aligned 3D renders.
+| Tier | Image file | Description | Notes |
+|------|------------|-------------|-------|
+| **Entry (AMD)** | `assets/hardware/entry_amd_laptop_ryzen_ai_max.jpg` | HP ZBook Ultra 14 G1a laptop with Ryzen AI Max+ 395 / 50 NPU TOPS. | Public photo is a laptop, not a FABIABox appliance. Needs a custom render or chassis photo. |
+| **Entry alt (Thor)** | `assets/hardware/entry_nvidia_drive_agx_thor_devkit.jpg` | Compact NVIDIA Jetson-style devkit box with exposed carrier board and NVIDIA SoC module. | Fits an edge/devkit appliance; not a consumer desktop. |
+| **Pro** | `assets/hardware/pro_nvidia_dgx_spark_box.webp` | Small horizontal desktop box (DGX Spark), champagne/gold finish, NVIDIA logo. | Clean product shot; matches the tier. |
+| **Enterprise** | `assets/hardware/enterprise_nvidia_dgx_station_gb300_scan.webp` | Tower workstation with gold front panel, "DGX STATION" branding, exposed GPU/motherboard internals. | Clean product shot; matches the tier. |
 
-## Open questions
+## Mouse-over technical descriptions
 
-1. What does lifetime premium support cover? Hardware, OS updates, agent tuning, 24/7?
-2. Pricing model: hardware cost + monthly Fabia OS/agent subscription?
-3. Is the RAG/knowledge system per company/project, or shared across all users on the appliance?
-4. Which Odoo modules are enabled by default?
-5. Do you have real product photography, or should we generate brand-aligned renders?
+| Tier | Mouse-over copy |
+|------|-----------------|
+| **Entry** | AMD Ryzen AI Max+ 395 APU: 16 Zen 5 cores up to 5.1 GHz, Radeon 8060S iGPU (40 CU RDNA 3+), XDNA 2 NPU up to 50 TOPS, up to 128 GB LPDDR5X. |
+| **Entry alt** | NVIDIA DRIVE AGX Thor: Blackwell iGPU, ARM Neoverse V3AE CPU, up to 1,000 INT8 TOPS / 2,000 FP4 TFLOPS, compact edge AI devkit. |
+| **Pro** | NVIDIA DGX Spark (GB10 Grace Blackwell Superchip): 20-core Arm CPU, 128 GB unified memory, up to 1 PFLOP FP4, models up to 200B params, 150 mm cube. |
+| **Enterprise** | NVIDIA DGX Station (GB300 Grace Blackwell Ultra): 72-core Grace Neoverse V2, 748 GB coherent memory, up to 20 PFLOPS FP4, models up to 1T params. |
+
+## Decisions pending
+
+- Pricing for hardware + Fabia OS is **not yet defined**.
+- **Founders tier scope confirmed**: lifetime premium support + lifetime Founders-level SquadShelf ecosystem access.
