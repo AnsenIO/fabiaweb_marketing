@@ -77,3 +77,20 @@
 
 - Pricing for hardware + Fabia OS is **not yet defined**.
 - **Founders tier scope confirmed**: lifetime premium support + lifetime Founders-level SquadShelf ecosystem access.
+
+## Offer-page visual treatment
+
+| Tier | Primary image | Treatment |
+|------|---------------|-----------|
+| **Entry** | `assets/hardware/fabiabox_entry_render_60.png` | Custom-rendered low-wide FABIABox with glowing F emblem, teal/violet accents. |
+| **Pro** | `assets/hardware/pro_nvidia_dgx_spark_box.webp` | Public DGX Spark product shot. |
+| **Enterprise** | `assets/hardware/enterprise_nvidia_dgx_station_gb300_scan.webp` | Public DGX Station tower shot. |
+
+- Each tier card shows the hardware image + a Fabia OS UI overlay.
+- Mouse-over layer shows the core technical specs from the table above.
+- Pricing remains TBD; CTA defaults to "Reserve now — pricing announced at launch".
+
+## Open questions
+
+1. Should the three tier cards share one common layout, or should Enterprise get a heavier data-sheet treatment?
+2. Build the offer page as HTML/CSS now, or keep it as copy + assets for the web team?
