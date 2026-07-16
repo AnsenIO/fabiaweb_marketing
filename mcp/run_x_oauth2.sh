@@ -3,7 +3,7 @@
 
 set -e
 
-ENV_FILE="/home/ansen/projects/fabiabox_marketing/.env"
+ENV_FILE="/home/ansen/projects/fabiaweb_marketing/config/.env"
 if [[ -f "$ENV_FILE" ]]; then
     export $(grep -v '^#' "$ENV_FILE" | xargs -d '\n' 2>/dev/null || true)
 fi

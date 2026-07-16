@@ -10,9 +10,9 @@ import requests
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
 
-# Load env from project root
+# Load env from project config
 REPO_ROOT = Path(__file__).resolve().parents[1]
-load_dotenv(REPO_ROOT / ".." / "fabiabox_marketing" / ".env")
+load_dotenv(REPO_ROOT / "config" / ".env")
 
 mcp = FastMCP("x_oauth2")
 
